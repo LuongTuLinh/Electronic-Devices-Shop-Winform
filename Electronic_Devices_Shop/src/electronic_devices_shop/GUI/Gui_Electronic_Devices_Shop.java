@@ -93,7 +93,7 @@ public class Gui_Electronic_Devices_Shop {
 
         lbTitle = new JLabel(" Electronic Devices Management");
         lbTitle.setBounds(250,7,260,25);
-        lbTitle.setForeground(new Color(102,102,102));
+        lbTitle.setForeground(new Color(80, 80, 80));
         lbTitle.setFont(new Font("Times New Roman",1, (int) 18.5));
 
         lbiconSetting = new JLabel();
@@ -207,27 +207,27 @@ public class Gui_Electronic_Devices_Shop {
         btnTourManagement.setFocusPainted(false);
         btnTourManagement.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
-//        btnAttractionManagement = new JButton("");
-//        //btnAttractionManagement.setBackground(new Color(12, 109, 102));
-//        btnAttractionManagement.setBounds(5,230,190,30);
-//        btnAttractionManagement.setForeground(new Color(255,255,255));
-//        //btnAttractionManagement.setIcon(new ImageIcon(getClass().getResource("/image/icons8_around_the_globe_filled_20px.png")));
-//        btnAttractionManagement.setFont(new Font("Times New Roman",1,14));
-//        btnAttractionManagement.setHorizontalAlignment(SwingConstants.CENTER);
-//        btnAttractionManagement.setBorder(null);
-//        btnAttractionManagement.setFocusPainted(false);
-//        btnAttractionManagement.setCursor(new Cursor(Cursor.HAND_CURSOR));
-//
-//        btnCategoryManagement = new JButton("");
-//        //btnCategoryManagement.setBackground(new Color(12, 109, 102));
-//        btnCategoryManagement.setBounds(5,260,190,30);
-//        btnCategoryManagement.setForeground(new Color(255,255,255));
-//        //btnCategoryManagement.setIcon(new ImageIcon(getClass().getResource("/image/icons8_checklist_20px.png")));
-//        btnCategoryManagement.setFont(new Font("Times New Roman",1,14));
-//        btnCategoryManagement.setHorizontalAlignment(SwingConstants.CENTER);
-//        btnCategoryManagement.setBorder(null);
-//        btnCategoryManagement.setFocusPainted(false);
-//        btnCategoryManagement.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnAttractionManagement = new JButton("Category Management");
+        btnAttractionManagement.setBackground(new Color(46, 46, 46));
+        btnAttractionManagement.setBounds(5,230,190,30);
+        btnAttractionManagement.setForeground(new Color(255,255,255));
+        //btnAttractionManagement.setIcon(new ImageIcon(getClass().getResource("/image/icons8_around_the_globe_filled_20px.png")));
+        btnAttractionManagement.setFont(new Font("Times New Roman",1,14));
+        btnAttractionManagement.setHorizontalAlignment(SwingConstants.CENTER);
+        btnAttractionManagement.setBorder(null);
+        btnAttractionManagement.setFocusPainted(false);
+        btnAttractionManagement.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+        btnCategoryManagement = new JButton("Goods Delivery Notes");
+        btnCategoryManagement.setBackground(new Color(46, 46, 46));
+        btnCategoryManagement.setBounds(5,260,190,30);
+        btnCategoryManagement.setForeground(new Color(255,255,255));
+        //btnCategoryManagement.setIcon(new ImageIcon(getClass().getResource("/image/icons8_checklist_20px.png")));
+        btnCategoryManagement.setFont(new Font("Times New Roman",1,14));
+        btnCategoryManagement.setHorizontalAlignment(SwingConstants.CENTER);
+        btnCategoryManagement.setBorder(null);
+        btnCategoryManagement.setFocusPainted(false);
+        btnCategoryManagement.setCursor(new Cursor(Cursor.HAND_CURSOR));
 //
 //        btnCostTypeManagement = new JButton("");
 //        //btnCostTypeManagement.setBackground(new Color(12, 109, 102));
@@ -332,8 +332,8 @@ public class Gui_Electronic_Devices_Shop {
         panelMenu.add(sptUnderLogo);
         panelMenu.add(labelMenu);
         panelMenu.add(btnTourManagement);
-//        panelMenu.add(btnAttractionManagement);
-//        panelMenu.add(btnCategoryManagement);
+        panelMenu.add(btnAttractionManagement);
+        panelMenu.add(btnCategoryManagement);
 //        panelMenu.add(btnCostTypeManagement);
 //        panelMenu.add(btnRoleManagement);
 //        panelMenu.add(btnThongKe);
@@ -387,6 +387,40 @@ public class Gui_Electronic_Devices_Shop {
             public void mouseClicked(MouseEvent e){
                 panelProcessFunction.removeAll();
                 panelProcessFunction.add(new Gui_Table_List_Products());
+                jframe.repaint();
+            }
+        });
+
+        btnAttractionManagement.addMouseListener(new MouseAdapter(){
+            @Override
+            public void mouseEntered(MouseEvent e){
+                btnAttractionManagement.setBackground(new Color(87, 87, 87));
+            }
+            @Override
+            public void mouseExited(MouseEvent e){
+                btnAttractionManagement.setBackground(new Color(46, 46, 46));
+            }
+            @Override
+            public void mouseClicked(MouseEvent e){
+                panelProcessFunction.removeAll();
+                panelProcessFunction.add(new Gui_Table_Category());
+                jframe.repaint();
+            }
+        });
+
+        btnCategoryManagement.addMouseListener(new MouseAdapter(){
+            @Override
+            public void mouseEntered(MouseEvent e){
+                btnCategoryManagement.setBackground(new Color(87, 87, 87));
+            }
+            @Override
+            public void mouseExited(MouseEvent e){
+                btnCategoryManagement.setBackground(new Color(46, 46, 46));
+            }
+            @Override
+            public void mouseClicked(MouseEvent e){
+                panelProcessFunction.removeAll();
+                panelProcessFunction.add(new GuiTableGoodsDeliveryNotes());
                 jframe.repaint();
             }
         });

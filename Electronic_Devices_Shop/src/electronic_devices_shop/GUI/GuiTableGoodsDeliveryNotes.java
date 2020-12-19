@@ -23,12 +23,11 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author DELL
  */
-public class Gui_Table_List_Products extends JPanel{
+public class GuiTableGoodsDeliveryNotes extends JPanel{
     /*************DECLARE JPANEL********************/
     private JPanel panelHeader;
     private JPanel panelContent;
     private JPanel panelButtonHandleTour;
-    private JPanel panelSearchPrice;
 
     /*************END DECLARE JPANEL********************/
 
@@ -40,13 +39,6 @@ public class Gui_Table_List_Products extends JPanel{
     private JButton buttonSearchTour;
 
     /*************END DECLARE ELEMENT JPANEL HEADER********************/
-
-    /*************DECLARE ELEMENT JPANEL SEARCH PRICE********************/
-    private JLabel labelPriceToPrice;
-    private JTextField txtSearchPriceLow;
-    private JTextField txtSearchPriceExpensive;
-
-    /*************END DECLARE ELEMENT JPANEL SEARCH PRICE********************/
 
     /*************DECLARE ELEMENT JPANEL PANEL BUTTON HANDLE TOUR********************/
     private JButton btnEditTour;
@@ -60,7 +52,7 @@ public class Gui_Table_List_Products extends JPanel{
     public static DefaultTableModel modelTableTour;
     private JScrollPane scrollPane;
     /*************DECLARE ELEMENT JPANEL CONTENT********************/
-    public Gui_Table_List_Products(){
+    public GuiTableGoodsDeliveryNotes(){
         init();
     }
     public void init(){
@@ -106,76 +98,42 @@ public class Gui_Table_List_Products extends JPanel{
 
         /*------------------------END PANEL HEADER INCLUDE BUTTON AND SEARCH-----------------------------*/
 
-        panelSearchPrice = new JPanel();
-        panelSearchPrice.setLayout(null);
-        panelSearchPrice.setBounds(5, 90, 340, 70);
-        panelSearchPrice.setBackground(Color.white);
-        Border borderOfPanelSearchPrice = BorderFactory.createTitledBorder("Tìm kiếm theo giá");
-        panelSearchPrice.setBorder(borderOfPanelSearchPrice);
-        txtSearchPriceLow = new JTextField();
-        txtSearchPriceLow.setBounds(25,25,120,25);
-        txtSearchPriceLow.addKeyListener(new KeyAdapter() {
-            public void keyReleased(KeyEvent e) {
-                String price = txtSearchPriceLow.getText();
-                long priceTour = Long.parseLong(price.replace(",",""));
-                String priceNewTour = java.text.NumberFormat.getIntegerInstance().format(priceTour);
-                txtSearchPriceLow.setText(priceNewTour);
-            }
-        });
-
-        labelPriceToPrice = new JLabel("đến");
-        labelPriceToPrice.setBounds(155,25,80,25);
-
-        txtSearchPriceExpensive = new JTextField();
-        txtSearchPriceExpensive.setBounds(190,25,120,25);
-        txtSearchPriceExpensive.addKeyListener(new KeyAdapter() {
-            public void keyReleased(KeyEvent e) {
-                String price = txtSearchPriceExpensive.getText();
-                long priceTour = Long.parseLong(price.replace(",",""));
-                String priceNewTour = java.text.NumberFormat.getIntegerInstance().format(priceTour);
-                txtSearchPriceExpensive.setText(priceNewTour);
-            }
-        });
-
-        panelSearchPrice.add(txtSearchPriceLow);
-        panelSearchPrice.add(labelPriceToPrice);
-        panelSearchPrice.add(txtSearchPriceExpensive);
-
         /*------------------------PANEL BUTTON HANDLE TOUR(ADD, EDIT, DELETE, SAVE)-----------------------------*/
         panelButtonHandleTour = new JPanel();
         panelButtonHandleTour.setLayout(null);
-        panelButtonHandleTour.setBounds(390, 90, 590, 70);
+        panelButtonHandleTour.setBounds(0, 520, 990, 70);
         panelButtonHandleTour.setBackground(Color.white);
-        Border borderPanelButton = BorderFactory.createTitledBorder("Xử lý sản phẩm");
-        panelButtonHandleTour.setBorder(borderPanelButton);
+//        Border borderPanelButton = BorderFactory.createTitledBorder("Xử lý sản phẩm");
+//        panelButtonHandleTour.setBorder(borderPanelButton);
 
 
-        btnEditTour = new JButton("Edit Product");
-        btnEditTour.setBackground(new Color(255, 255, 255));
-        btnEditTour.setFont(new Font("Segoe",Font.BOLD,13));
-        btnEditTour.setForeground(Color.BLACK);
-        btnEditTour.setBounds(155,20,115,30);
-        btnEditTour.setCursor(new Cursor(Cursor.HAND_CURSOR));
-
-        btnDeleteTour = new JButton("Delete Product");
-        btnDeleteTour.setBackground(new Color(255, 255, 255));
-        btnDeleteTour.setFont(new Font("Segoe",Font.BOLD,13));
-        btnDeleteTour.setForeground(Color.BLACK);
-        btnDeleteTour.setBounds(290,20,130,30);
-        btnDeleteTour.setCursor(new Cursor(Cursor.HAND_CURSOR));
-
-        btnAddTour = new JButton("Add Product");
+        btnAddTour = new JButton("Add Goods Delivery ");
         btnAddTour.setBackground(new Color(255, 255, 255));
         btnAddTour.setFont(new Font("Segoe",Font.BOLD,13));
         btnAddTour.setForeground(Color.BLACK);
-        btnAddTour.setBounds(20,20,115,30);
+        btnAddTour.setBounds(100,20,170,30);
         btnAddTour.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
-        btnSaveTour = new JButton("Detail Product");
+        btnEditTour = new JButton("Edit Goods Delivery ");
+        btnEditTour.setBackground(new Color(255, 255, 255));
+        btnEditTour.setFont(new Font("Segoe",Font.BOLD,13));
+        btnEditTour.setForeground(Color.BLACK);
+        btnEditTour.setBounds(300,20,170,30);
+        btnEditTour.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+        btnDeleteTour = new JButton("Delete Goods Delivery ");
+        btnDeleteTour.setBackground(new Color(255, 255, 255));
+        btnDeleteTour.setFont(new Font("Segoe",Font.BOLD,13));
+        btnDeleteTour.setForeground(Color.BLACK);
+        btnDeleteTour.setBounds(500,20,180,30);
+        btnDeleteTour.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+
+        btnSaveTour = new JButton("Detail Goods Delivery ");
         btnSaveTour.setBackground(new Color(255, 255, 255));
         btnSaveTour.setFont(new Font("Segoe",Font.BOLD,13));
         btnSaveTour.setForeground(Color.BLACK);
-        btnSaveTour.setBounds(440,20,125,30);
+        btnSaveTour.setBounds(720,20,175,30);
         btnSaveTour.setCursor(new Cursor(Cursor.HAND_CURSOR));
         /****************ADD ELEMENT FOR PANEL BUTTON HANDLE TOUR***********************/
         panelButtonHandleTour.add(btnEditTour);
@@ -189,16 +147,16 @@ public class Gui_Table_List_Products extends JPanel{
         panelContent = new JPanel();
         panelContent.setLayout(null);
         panelContent.setBackground(Color.white);
-        panelContent.setBounds(0, 175, 990, 420);
+        panelContent.setBounds(0, 120, 990, 420);
 
         Vector<String> columnNames = new Vector<>();
-        columnNames.add("Product Id");
-        columnNames.add("Product Name");
-        columnNames.add("Product Category");
-        columnNames.add("Product Status");
-        columnNames.add("Product Price");
-        String data[][] = { { "101", "Tran Van Minh", "laptop", "con hang", "139103" }};
-        String column[] = { "Product Id", "Product Name", "Product Category", "Product Status", "Product Price" };
+        columnNames.add("Id");
+        columnNames.add("Name");
+        columnNames.add("Description");
+        columnNames.add("Total Price");
+        columnNames.add("Status");
+        String data[][] = { { "101", "adda asdf sdfa", "adf adf daf", "afdf adf", "131314" }};
+        String column[] = { " Id", " Name", " Description", " Status", "Total Price" };
 
 
         //modelTableTour = new DefaultTableModel(columnNames, 0);
@@ -249,7 +207,6 @@ public class Gui_Table_List_Products extends JPanel{
 
         /*******************ADD ELEMENT FOR PANEL MAIN***********************/
         add(panelHeader);
-        add(panelSearchPrice);
         add(panelContent);
         add(panelButtonHandleTour);
 
@@ -269,7 +226,7 @@ public class Gui_Table_List_Products extends JPanel{
                 }
                 else
                 {
-                    Gui_Edit_Product edit_product = new Gui_Edit_Product();
+
                 }
             }
         });
@@ -285,7 +242,7 @@ public class Gui_Table_List_Products extends JPanel{
                 }
                 else
                 {
-                    Gui_Detail_Product detail_product = new Gui_Detail_Product();
+
                 }
             }
         });
@@ -293,7 +250,7 @@ public class Gui_Table_List_Products extends JPanel{
         btnAddTour.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                Gui_Add_New_Product add_new_product = new Gui_Add_New_Product();
+                GuiAddGoodsDeliveryNotes addGoodsDeliveryNotes = new GuiAddGoodsDeliveryNotes();
             }
         });
 
