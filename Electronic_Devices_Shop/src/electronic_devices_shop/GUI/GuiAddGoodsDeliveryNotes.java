@@ -1,6 +1,14 @@
 package electronic_devices_shop.GUI;
 
 
+import electronic_devices_shop.DTO.CategoryDTO;
+import electronic_devices_shop.DTO.UserDTO;
+import electronic_devices_shop.Handle_API.HandleApiCategory;
+import electronic_devices_shop.Handle_API.HandleApiProduct;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -10,6 +18,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.regex.Pattern;
+
+import static electronic_devices_shop.GUI.Gui_Table_List_Products.LoadDataTable;
 
 
 public class GuiAddGoodsDeliveryNotes extends JFrame {
@@ -25,17 +35,15 @@ public class GuiAddGoodsDeliveryNotes extends JFrame {
     private JLabel labelNameTour;
     private JTextField txtNameTour;
     private JSeparator sptNameTour;
-    private JLabel labelVND;
 
-    private JLabel labelPriceTour;
-    private JTextField txtPriceTour;
-    private JSeparator sptPriceTour;
+
+
+
 
     private JLabel labelSpecification;
     private JTextArea textAreaDescription;
     private JScrollPane scrollPaneDescription;
 
-    private JLabel labelCategoryTour;
 //    private static JComboBox<Tour_Category_DTO> comboBoxCategoryTour;
 
     private JButton buttonSaveNewTour;
@@ -45,7 +53,7 @@ public class GuiAddGoodsDeliveryNotes extends JFrame {
         GUI();
     }
     public void GUI(){
-        setSize(450, 500);
+        setSize(450, 345);
         setLocationRelativeTo(null);
         setLayout(null);
         getContentPane().setBackground(Color.BLACK);
@@ -78,7 +86,48 @@ public class GuiAddGoodsDeliveryNotes extends JFrame {
         lbTitle.setFont(new Font("Times New Roman",1,18));
 
         /*========================= TEXTFIELD NAME TOUR ========================*/
+        labelNameTour = new JLabel(" Supplier Name :",JLabel.CENTER);
+        labelNameTour.setFont(new Font("Segoe",Font.BOLD,12));
+        labelNameTour.setBounds(5,50,100,30);
 
+        txtNameTour = new JTextField();
+        txtNameTour.setBounds(120,48,270,30);
+        txtNameTour.setBorder(null);
+        txtNameTour.setFont(new Font(Font.SERIF, Font.PLAIN, 15));
+
+        sptNameTour = new JSeparator();
+        sptNameTour.setBounds(115,78,300,10);
+        sptNameTour.setBackground(new Color(0,0,0));
+        /*=========================END TEXTFIELD NAME TOUR ================*/
+
+        /*========================= TEXTFIELD PRICE TOUR ===================*/
+
+        labelSpecification = new JLabel("Description :",JLabel.CENTER);
+        labelSpecification.setFont(new Font("Segoe",Font.BOLD,12));
+        labelSpecification.setBounds(5,100,120,30);
+
+        textAreaDescription = new JTextArea(10, 10);
+        textAreaDescription.setLineWrap(true);
+        textAreaDescription.setWrapStyleWord(true);
+        textAreaDescription.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        textAreaDescription.setFont(new Font("Arial, Helvetica, sans-serif", Font.PLAIN, 14));
+
+        scrollPaneDescription = new JScrollPane(textAreaDescription);
+        scrollPaneDescription.setBounds(45,135,360,100);
+
+        buttonSaveNewTour = new JButton(" Add New ");
+        buttonSaveNewTour.setBackground(new Color(255, 255, 255));
+        buttonSaveNewTour.setFont(new Font("Segoe",Font.BOLD,13));
+        buttonSaveNewTour.setForeground(Color.BLACK);
+        buttonSaveNewTour.setBounds(65,250,100,30);
+        buttonSaveNewTour.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+        buttonClearField = new JButton(" Refresh ");
+        buttonClearField.setBackground(new Color(255, 255, 255));
+        buttonClearField.setFont(new Font("Segoe",Font.BOLD,13));
+        buttonClearField.setForeground(Color.BLACK);
+        buttonClearField.setBounds(270,250,100,30);
+        buttonClearField.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
         /*****************ADD ELEMENT FOR PANEL ADD NEW TOUR*****************************/
         panelAddNewTour.add(sptAboveLeftInHeader);
@@ -87,34 +136,40 @@ public class GuiAddGoodsDeliveryNotes extends JFrame {
         panelAddNewTour.add(sptUnderRightInHeader);
         panelAddNewTour.add(lbTitle);
 
+        panelAddNewTour.add(labelNameTour);
+        panelAddNewTour.add(txtNameTour);
+        panelAddNewTour.add(sptNameTour);
 
+        panelAddNewTour.add(labelSpecification);
+        panelAddNewTour.add(scrollPaneDescription);
+
+        panelAddNewTour.add(buttonClearField);
+        panelAddNewTour.add(buttonSaveNewTour);
         /*******************END ADD ELEMENT FOR PANEL ADD NEW TOUR**************************/
         /*********************************END PANEL ADD NEW TOUR*****************************************/
         add(panelAddNewTour);
         setVisible(true);
 
         /********************************* HANDLE BUTTON ADD NEW TOUR *****************************************/
+        buttonClearField.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                clearTextField();
+            }
+        });
+
+        buttonSaveNewTour.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                GuiAddProductToGoodsDeliveryNotes addProductToGoodsDeliveryNotes = new GuiAddProductToGoodsDeliveryNotes();
+                dispose();
+            }
+        });
 
         /*********************************END HANDLE BUTTON ADD NEW TOUR *****************************************/
     }
-    public static void loadCategoryTourComboBox(){
-//        User_DTO user = new User_DTO();
-//        JSONArray array = new JSONArray(Handle_API_Tour_Category.Fetch_API_Tour_Category("tourCategories?Page=1&Limit=100", user.getToken()));
-//        for(int i = 0; i < array.length(); i++){
-//            try {
-//                JSONObject jsonObject = (JSONObject) array.get(i);
-//                String id = jsonObject.get("id").toString();
-//                String name = jsonObject.get("name").toString();
-//                comboBoxCategoryTour.addItem(new Tour_Category_DTO(id, name));
-//            } catch (JSONException e) {
-//                e.printStackTrace();
-//            }
-//        }
-
-    }
     public void clearTextField(){
         txtNameTour.setText("");
-        txtPriceTour.setText("");
         textAreaDescription.setText("");
     }
     public static boolean empty( final String s ) {

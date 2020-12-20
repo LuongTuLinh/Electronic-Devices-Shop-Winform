@@ -5,6 +5,15 @@
  */
 package electronic_devices_shop.GUI;
 
+import electronic_devices_shop.DTO.UserDTO;
+import electronic_devices_shop.Handle_API.HandleApiGoodsDeliveryNote;
+import electronic_devices_shop.Handle_API.HandleApiProduct;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Font;
@@ -13,6 +22,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.plaf.basic.BasicScrollBarUI;
@@ -69,10 +80,10 @@ public class GuiTableGoodsDeliveryNotes extends JPanel{
         panelHeader.setBorder(blackline);
 
         labelSearch = new JLabel("Tìm kiếm:");
-        labelSearch.setBounds(30,19,80,25);
+        labelSearch.setBounds(130,19,80,25);
 
         txtSearch = new JTextField();
-        txtSearch.setBounds(95,19,250,25);
+        txtSearch.setBounds(195,19,320,25);
 
 //                lbIconSearch = new JLabel();
 //                lbIconSearch.setBounds(360,18,25,25);
@@ -151,16 +162,12 @@ public class GuiTableGoodsDeliveryNotes extends JPanel{
 
         Vector<String> columnNames = new Vector<>();
         columnNames.add("Id");
-        columnNames.add("Name");
+        columnNames.add("Supplier Name");
         columnNames.add("Description");
         columnNames.add("Total Price");
-        columnNames.add("Status");
-        String data[][] = { { "101", "adda asdf sdfa", "adf adf daf", "afdf adf", "131314" }};
-        String column[] = { " Id", " Name", " Description", " Status", "Total Price" };
-
-
-        //modelTableTour = new DefaultTableModel(columnNames, 0);
-        tableTour = new JTable(data, column);
+        modelTableTour = new DefaultTableModel(columnNames, 0);
+        tableTour = new JTable(modelTableTour);
+        LoadDataTableGDN();
 
 
 
@@ -222,11 +229,11 @@ public class GuiTableGoodsDeliveryNotes extends JPanel{
 
                 if(row == -1)
                 {
-                    JOptionPane.showMessageDialog(null, "Vui lòng chọn Tour cần xem");
+                    JOptionPane.showMessageDialog(null, "Vui lòng chọn cần sua");
                 }
                 else
                 {
-
+                    JOptionPane.showMessageDialog(null, "Nay Phieu Nhap Ai cho sua ma bam");
                 }
             }
         });
@@ -238,11 +245,11 @@ public class GuiTableGoodsDeliveryNotes extends JPanel{
 
                 if(row == -1)
                 {
-                    JOptionPane.showMessageDialog(null, "Vui lòng chọn Tour cần xem");
+                    JOptionPane.showMessageDialog(null, "Vui lòng chọn cần xem");
                 }
                 else
                 {
-
+                    JOptionPane.showMessageDialog(null, "Chua lam !!!!!");
                 }
             }
         });
@@ -261,15 +268,21 @@ public class GuiTableGoodsDeliveryNotes extends JPanel{
 
                 if(row == -1)
                 {
-                    JOptionPane.showMessageDialog(null, "Vui lòng chọn Tour cần xoá");
+                    JOptionPane.showMessageDialog(null, "Vui lòng chọn Tour xoá");
                 }
                 else
                 {
-                    int result = JOptionPane.showConfirmDialog(null,"Bạn có chắc muốn xoá tour này?", "Thông báo",
+                    int result = JOptionPane.showConfirmDialog(null,"Bạn có chắc muốn xoá này?", "Thông báo",
                             JOptionPane.YES_NO_OPTION,
                             JOptionPane.QUESTION_MESSAGE);
                     if(result == JOptionPane.YES_OPTION){
+                        String tourId = (tableTour.getModel().getValueAt(row, 0).toString());
 
+                        UserDTO user = new UserDTO();
+                        String response = HandleApiProduct.sendDeleteProduct("","goodsReceivingNotes/"+tourId,user.getToken());
+                        if(response.equals("success")){
+                            LoadDataTableGDN();
+                        }
                     }else if (result == JOptionPane.NO_OPTION){
 
                     }else {
@@ -280,6 +293,39 @@ public class GuiTableGoodsDeliveryNotes extends JPanel{
             }
         });
         /*------------------------END HANDLE EVENT ONCLICK MOUSE BUTTON-----------------------------*/
+    }
+
+    public static void LoadDataTableGDN(){
+        UserDTO user = new UserDTO();
+        JSONArray json = new JSONArray(HandleApiGoodsDeliveryNote.GetAllGoodsDeliveryNotes("goodsReceivingNotes?Page=1", user.getToken()));
+        modelTableTour.setRowCount(0);
+        for (int i = 0; i < json.length(); i++) {
+
+            JSONObject jsonObj;
+            try {
+                jsonObj = json.getJSONObject(i);
+                Vector<String> data = new Vector<>();
+
+                data.add(jsonObj.get("id").toString());
+                data.add(jsonObj.get("supplierName").toString());
+
+//                JSONParser parser = new JSONParser();
+//                org.json.simple.JSONObject myObject;
+//                myObject = (org.json.simple.JSONObject) parser.parse(jsonObj.get("category").toString());
+//                data.add(myObject.get("name").toString());
+                data.add(jsonObj.get("description").toString());
+
+                long price = Long.parseLong(jsonObj.get("totalPrice").toString());
+                String priceTour = java.text.NumberFormat.getIntegerInstance().format(price);
+                data.add(priceTour);
+
+                modelTableTour.addRow(data);
+            } catch (JSONException ex) {
+                Logger.getLogger(Gui_Table_List_Products.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+        }
+        tableTour.setModel(modelTableTour);
     }
 
 }

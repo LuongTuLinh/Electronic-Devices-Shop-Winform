@@ -1,6 +1,14 @@
 package electronic_devices_shop.GUI;
 
 
+import electronic_devices_shop.DTO.CategoryDTO;
+import electronic_devices_shop.DTO.UserDTO;
+import electronic_devices_shop.Handle_API.HandleApiCategory;
+import electronic_devices_shop.Handle_API.HandleApiProduct;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -11,9 +19,12 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.regex.Pattern;
 
+import static electronic_devices_shop.GUI.Gui_Table_List_Products.LoadDataTable;
+
 
 public class Gui_Add_New_Product extends JFrame {
 
+    private static JComboBox<CategoryDTO> comboBoxCategoryTour;
     private JPanel panelAddNewTour;
 
     private JSeparator sptAboveLeftInHeader;
@@ -25,6 +36,15 @@ public class Gui_Add_New_Product extends JFrame {
     private JLabel labelNameTour;
     private JTextField txtNameTour;
     private JSeparator sptNameTour;
+
+    private JLabel labelUnit;
+    private JTextField txtUnit;
+    private JSeparator sptUnit;
+
+    private JLabel labelSku;
+    private JTextField txtSku;
+    private JSeparator sptSku;
+
     private JLabel labelVND;
 
     private JLabel labelPriceTour;
@@ -45,7 +65,7 @@ public class Gui_Add_New_Product extends JFrame {
         GUI();
     }
     public void GUI(){
-        setSize(450, 500);
+        setSize(450, 545);
         setLocationRelativeTo(null);
         setLayout(null);
         getContentPane().setBackground(Color.BLACK);
@@ -114,18 +134,44 @@ public class Gui_Add_New_Product extends JFrame {
         //=========================COMBOBOX CATEGORY TOUR=========================//
         labelCategoryTour = new JLabel("Category:",JLabel.CENTER);
         labelCategoryTour.setFont(new Font("Segoe",Font.BOLD,12));
-        labelCategoryTour.setBounds(5,166,80,30);
+        labelCategoryTour.setBounds(5,156,80,30);
 
-//        comboBoxCategoryTour = new JComboBox<>();
-//        loadCategoryTourComboBox();
-//
-//        comboBoxCategoryTour.setBounds(90,160,150,30);
-//        comboBoxCategoryTour.setFont(new Font("Segoe",Font.BOLD,13));
+        comboBoxCategoryTour = new JComboBox<>();
+        loadCategoryTourComboBox();
+
+        comboBoxCategoryTour.setBounds(90,150,150,30);
+        comboBoxCategoryTour.setFont(new Font("Segoe",Font.BOLD,13));
         //=====================END COMBOBOX CATEGORY TOUR=====================//
+
+        labelUnit = new JLabel(" Unit :",JLabel.CENTER);
+        labelUnit.setFont(new Font("Segoe",Font.BOLD,12));
+        labelUnit.setBounds(9,192,80,30);
+
+        txtUnit = new JTextField();
+        txtUnit.setBounds(90,188,300,30);
+        txtUnit.setBorder(null);
+        txtUnit.setFont(new Font(Font.SERIF, Font.PLAIN, 15));
+
+        sptUnit = new JSeparator();
+        sptUnit.setBounds(90,218,300,10);
+        sptUnit.setBackground(new Color(0,0,0));
+
+        labelSku = new JLabel(" Sku :",JLabel.CENTER);
+        labelSku.setFont(new Font("Segoe",Font.BOLD,12));
+        labelSku.setBounds(9,250,80,30);
+
+        txtSku = new JTextField();
+        txtSku.setBounds(90,248,300,30);
+        txtSku.setBorder(null);
+        txtSku.setFont(new Font(Font.SERIF, Font.PLAIN, 15));
+
+        sptSku = new JSeparator();
+        sptSku.setBounds(90,278,300,10);
+        sptSku.setBackground(new Color(0,0,0));
 
         labelSpecification = new JLabel("Description :",JLabel.CENTER);
         labelSpecification.setFont(new Font("Segoe",Font.BOLD,12));
-        labelSpecification.setBounds(5,210,120,30);
+        labelSpecification.setBounds(5,300,120,30);
 
         textAreaDescription = new JTextArea(10, 10);
         textAreaDescription.setLineWrap(true);
@@ -134,20 +180,20 @@ public class Gui_Add_New_Product extends JFrame {
         textAreaDescription.setFont(new Font("Arial, Helvetica, sans-serif", Font.PLAIN, 14));
 
         scrollPaneDescription = new JScrollPane(textAreaDescription);
-        scrollPaneDescription.setBounds(45,245,360,150);
+        scrollPaneDescription.setBounds(45,335,360,100);
 
         buttonSaveNewTour = new JButton(" Add New ");
         buttonSaveNewTour.setBackground(new Color(255, 255, 255));
         buttonSaveNewTour.setFont(new Font("Segoe",Font.BOLD,13));
         buttonSaveNewTour.setForeground(Color.BLACK);
-        buttonSaveNewTour.setBounds(65,420,100,30);
+        buttonSaveNewTour.setBounds(65,450,100,30);
         buttonSaveNewTour.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
         buttonClearField = new JButton(" Refresh ");
         buttonClearField.setBackground(new Color(255, 255, 255));
         buttonClearField.setFont(new Font("Segoe",Font.BOLD,13));
         buttonClearField.setForeground(Color.BLACK);
-        buttonClearField.setBounds(270,420,100,30);
+        buttonClearField.setBounds(270,450,100,30);
         buttonClearField.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
         /*****************ADD ELEMENT FOR PANEL ADD NEW TOUR*****************************/
@@ -161,13 +207,21 @@ public class Gui_Add_New_Product extends JFrame {
         panelAddNewTour.add(txtNameTour);
         panelAddNewTour.add(sptNameTour);
 
+        panelAddNewTour.add(labelUnit);
+        panelAddNewTour.add(txtUnit);
+        panelAddNewTour.add(sptUnit);
+
+        panelAddNewTour.add(labelSku);
+        panelAddNewTour.add(txtSku);
+        panelAddNewTour.add(sptSku);
+
         panelAddNewTour.add(labelPriceTour);
         panelAddNewTour.add(txtPriceTour);
         panelAddNewTour.add(sptPriceTour);
         panelAddNewTour.add(labelVND);
 
         panelAddNewTour.add(labelCategoryTour);
-        //panelAddNewTour.add(comboBoxCategoryTour);
+        panelAddNewTour.add(comboBoxCategoryTour);
 
         panelAddNewTour.add(labelSpecification);
         panelAddNewTour.add(scrollPaneDescription);
@@ -190,31 +244,33 @@ public class Gui_Add_New_Product extends JFrame {
         buttonSaveNewTour.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-//                User_DTO user = new User_DTO();
-//                Tour_Category_DTO category_dto = (Tour_Category_DTO) (comboBoxCategoryTour.getSelectedItem());
-//                String categoryId = category_dto.getCategoryId();
-//                String nameTour = txtNameTour.getText();
-//                String priceTour = txtPriceTour.getText().replace(",","");
-//                String specification = textAreaDescription.getText();
-//                String price_PATTERN = "^[1-9]([0-9])*$";
-//                if( !empty( nameTour ) && !empty( priceTour ) && !empty( specification ) ) {
-//                    if(Pattern.matches(price_PATTERN, priceTour)==false){
-//                        JOptionPane.showMessageDialog(null, "Lỗi! Giá tour không hợp lệ, và giá tour phải lớn hơn 0. ");
-//                    } else {
-//                        String parameter = "{\"name\":\"" + nameTour + "\",\"specification\":\""+specification+"\",\"tourCategoryId\":"+categoryId+",\"price\":"+priceTour+"}";
-//                        System.out.println(parameter);
-//                        String response = Handle_API_Get_Tour.sendPost_Add_New_Tour(parameter, "tours", user.getToken());
-//                        if(response.equals("success")==true){
-//                            JOptionPane.showMessageDialog(null, "Thêm thành công");
-//                            LoadDataTable();
-//                            dispose();
-//                        }else {
-//                            JOptionPane.showMessageDialog(null, "Thêm thất bại, vui lòng thử lại");
-//                        }
-//                    }
-//                } else {
-//                    JOptionPane.showMessageDialog(null, "Lỗi! Vui lòng nhập đầy đủ thông tin");
-//                }
+                UserDTO user = new UserDTO();
+                CategoryDTO category_dto = (CategoryDTO) (comboBoxCategoryTour.getSelectedItem());
+                String categoryId = category_dto.getCategoryId();
+                String nameTour = txtNameTour.getText();
+                String priceTour = txtPriceTour.getText().replace(",","");
+                String unit = txtUnit.getText();
+                String sku = txtSku.getText();
+                String specification = textAreaDescription.getText();
+                String price_PATTERN = "^[1-9]([0-9])*$";
+                if( !empty( nameTour ) && !empty( priceTour ) && !empty( specification ) ) {
+                    if(Pattern.matches(price_PATTERN, priceTour)==false){
+                        JOptionPane.showMessageDialog(null, "Lỗi! Giá  không hợp lệ, và giá phải lớn hơn 0. ");
+                    } else {
+                        String parameter = "{\"name\":\""+nameTour+"\",\"description\":\""+specification+"\",\"unit\":\""+unit+"\",\"sku\":\""+sku+"\",\"price\":"+priceTour+",\"categoryId\":"+categoryId+"}";
+                        System.out.println(parameter);
+                        String response = HandleApiProduct.sendPostAddNewProducts(parameter, "products", user.getToken());
+                        if(response.equals("success")==true){
+                            JOptionPane.showMessageDialog(null, "Thêm thành công");
+                            LoadDataTable();
+                            dispose();
+                        }else {
+                            JOptionPane.showMessageDialog(null, "Thêm thất bại, vui lòng thử lại");
+                        }
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "Lỗi! Vui lòng nhập đầy đủ thông tin");
+                }
             }
         });
 
@@ -229,24 +285,26 @@ public class Gui_Add_New_Product extends JFrame {
         /*********************************END HANDLE BUTTON ADD NEW TOUR *****************************************/
     }
     public static void loadCategoryTourComboBox(){
-//        User_DTO user = new User_DTO();
-//        JSONArray array = new JSONArray(Handle_API_Tour_Category.Fetch_API_Tour_Category("tourCategories?Page=1&Limit=100", user.getToken()));
-//        for(int i = 0; i < array.length(); i++){
-//            try {
-//                JSONObject jsonObject = (JSONObject) array.get(i);
-//                String id = jsonObject.get("id").toString();
-//                String name = jsonObject.get("name").toString();
-//                comboBoxCategoryTour.addItem(new Tour_Category_DTO(id, name));
-//            } catch (JSONException e) {
-//                e.printStackTrace();
-//            }
-//        }
+        UserDTO user = new UserDTO();
+        JSONArray array = new JSONArray(HandleApiCategory.GetAllCategory("categories?Page=1", user.getToken()));
+        for(int i = 0; i < array.length(); i++){
+            try {
+                JSONObject jsonObject = (JSONObject) array.get(i);
+                String id = jsonObject.get("id").toString();
+                String name = jsonObject.get("name").toString();
+                comboBoxCategoryTour.addItem(new CategoryDTO(id, name));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
 
     }
     public void clearTextField(){
         txtNameTour.setText("");
         txtPriceTour.setText("");
         textAreaDescription.setText("");
+        txtSku.setText("");
+        txtUnit.setText("");
     }
     public static boolean empty( final String s ) {
         // Null-safe, short-circuit evaluation.

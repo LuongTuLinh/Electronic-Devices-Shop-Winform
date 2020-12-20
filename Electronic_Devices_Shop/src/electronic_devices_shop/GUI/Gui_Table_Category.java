@@ -5,6 +5,9 @@
  */
 package electronic_devices_shop.GUI;
 
+import electronic_devices_shop.DTO.CategoryDTO;
+import electronic_devices_shop.DTO.UserDTO;
+
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Font;
@@ -14,6 +17,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -27,12 +32,17 @@ import javax.swing.ListSelectionModel;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 import javax.swing.table.DefaultTableModel;
 
+import electronic_devices_shop.Handle_API.HandleApiCategory;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  *
  * @author DELL
  */
 public class Gui_Table_Category extends JPanel{
+    CategoryDTO categoryDTO;
     private JTabbedPane tabbedPane;
     /*************************DECLARE OF TABBED PANEL*********************************/
 
@@ -171,7 +181,6 @@ public class Gui_Table_Category extends JPanel{
         Vector<String> columnName = new Vector<>();
         columnName.add("Category Id");
         columnName.add("Name Category");
-        columnName.add("Date Create");
         modelTableCategoryTour = new DefaultTableModel(columnName, 0);
 
         tableCategoryTour = new JTable(modelTableCategoryTour);
@@ -278,17 +287,17 @@ public class Gui_Table_Category extends JPanel{
             public void mouseClicked(MouseEvent e) {
                 String nameCategory = txtNameCategory.getText();
                 if(!empty( nameCategory ) ) {
-//
-//                    User_DTO user = new User_DTO();
-//
-//                    String parameter = "{\"name\":\""+nameCategory+"\"}";
-//                    //APIRequester.sendPOST(parameter, "tourCategories", user.getToken());
-//                    String response = Handle_API_Tour_Category.sendPost_Add_CategoryTour(parameter, "tourCategories", user.getToken());
-//                    if(response.equals("success")==true){
-//                        LoadDataTableCategory();
-//                        JOptionPane.showMessageDialog(null, "Thêm thành công");
-//                        clearTextFieldCategory();
-//                    }
+
+                    UserDTO user = new UserDTO();
+
+                    String parameter = "{\"name\":\""+nameCategory+"\"}";
+                    //APIRequester.sendPOST(parameter, "tourCategories", user.getToken());
+                    String response = HandleApiCategory.sendPostAddCategory(parameter, "categories", user.getToken());
+                    if(response.equals("success")==true){
+                        LoadDataTableCategory();
+                        JOptionPane.showMessageDialog(null, "Thêm thành công");
+                        clearTextFieldCategory();
+                    }
 
                 }else {
                     JOptionPane.showMessageDialog(null, "Lỗi! Vui lòng nhập đầy đủ thông tin");
@@ -301,20 +310,20 @@ public class Gui_Table_Category extends JPanel{
             public void mouseClicked(MouseEvent e) {
                 int row = tableCategoryTour.getSelectedRow();
                 if( row == -1 ){
-                    JOptionPane.showMessageDialog(null, "Vui lòng chọn thể loại tour cần xoá");
+                    JOptionPane.showMessageDialog(null, "Vui lòng chọn thể loại cần xoá");
                 } else {
-                    int result = JOptionPane.showConfirmDialog(null,"Bạn có chắc muốn xoá thể loại tour này?", "Thông báo",
+                    int result = JOptionPane.showConfirmDialog(null,"Bạn có chắc muốn xoá thể loại này?", "Thông báo",
                             JOptionPane.YES_NO_OPTION,
                             JOptionPane.QUESTION_MESSAGE);
                     if(result == JOptionPane.YES_OPTION){
-//                        User_DTO user = new User_DTO();
-//                        String tourId = (tableCategoryTour.getModel().getValueAt(row, 0).toString());
-//                        //APIRequester.sendDelete("","tourCategories/"+tourId, user.getToken());
-//                        String response = Handle_API_Tour_Category.sendDeleteCategoryTour("","tourCategories/"+tourId, user.getToken());
-//                        if(response.equals("success") == true){
-//                            LoadDataTableCategory();
-//                            JOptionPane.showMessageDialog(null, "Xoá thể loại thành công");
-//                        }
+                        UserDTO user = new UserDTO();
+                        String tourId = (tableCategoryTour.getModel().getValueAt(row, 0).toString());
+                        //APIRequester.sendDelete("","tourCategories/"+tourId, user.getToken());
+                        String response = HandleApiCategory.sendDeleteCategory("","categories/"+tourId, user.getToken());
+                        if(response.equals("success") == true){
+                            LoadDataTableCategory();
+                            JOptionPane.showMessageDialog(null, "Xoá thể loại thành công");
+                        }
                     }else if (result == JOptionPane.NO_OPTION){
 
                     }else {
@@ -334,14 +343,14 @@ public class Gui_Table_Category extends JPanel{
                 if( row == -1 ){
                     JOptionPane.showMessageDialog(null, "Vui lòng chọn thể loại cần sửa");
                 }else {
-//                    String tourId = (tableCategoryTour.getModel().getValueAt(row, 0).toString());
-//                    String name = (tableCategoryTour.getModel().getValueAt(row, 1).toString());
-//                    buttonAddCategory.setVisible(false);
-//                    buttonClearFieldCategory.setVisible(false);
-//                    buttonSaveCategory.setVisible(true);
-//                    buttonCancelCategory.setVisible(true);
-//                    txtNameCategory.setText(name);
-//                    category_dto = new Tour_Category_DTO(tourId, name);
+                    String tourId = (tableCategoryTour.getModel().getValueAt(row, 0).toString());
+                    String name = (tableCategoryTour.getModel().getValueAt(row, 1).toString());
+                    buttonAddCategory.setVisible(false);
+                    buttonClearFieldCategory.setVisible(false);
+                    buttonSaveCategory.setVisible(true);
+                    buttonCancelCategory.setVisible(true);
+                    txtNameCategory.setText(name);
+                     categoryDTO = new CategoryDTO(tourId, name);
                 }
             }
         });
@@ -359,51 +368,53 @@ public class Gui_Table_Category extends JPanel{
         buttonSaveCategory.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-//                String name = txtNameCategory.getText();
-//                if(checkDifferent(name, category_dto)==false){
-//                    User_DTO user = new User_DTO();
-//                    String parameter = "{\"id\":"+category_dto.getCategoryId()+",\"name\":\""+name+"\"}";
-//                    System.out.println(parameter);
-//                    APIRequester.sendPUT(parameter, "tourCategories/"+category_dto.getCategoryId(), user.getToken());
-//                    clearTextFieldCategory();
-//                    LoadDataTableCategory();
-//                    buttonSaveCategory.setVisible(false);
-//                    buttonCancelCategory.setVisible(false);
-//                    buttonAddCategory.setVisible(true);
-//                    buttonClearFieldCategory.setVisible(true);
-//                    JOptionPane.showMessageDialog(null, "Sửa thành công");
-//                }else {
-//                    JOptionPane.showMessageDialog(null, "Thể loại không có thay đổi");
-//                }
+                String name = txtNameCategory.getText();
+                if(checkDifferent(name, categoryDTO)==false){
+                    UserDTO user = new UserDTO();
+                    String parameter = "{\"id\":"+categoryDTO.getCategoryId()+",\"name\":\""+name+"\"}";
+
+                    //APIRequester.sendPUT(parameter, "tourCategories/"+category_dto.getCategoryId(), user.getToken());
+                    String response = HandleApiCategory.sendPUTEditCategory(parameter, "categories/"+categoryDTO.getCategoryId(), user.getToken());
+                    if(response.equals("success")){
+                        clearTextFieldCategory();
+                        LoadDataTableCategory();
+                        buttonSaveCategory.setVisible(false);
+                        buttonCancelCategory.setVisible(false);
+                        buttonAddCategory.setVisible(true);
+                        buttonClearFieldCategory.setVisible(true);
+                        JOptionPane.showMessageDialog(null, "Sửa thành công");
+                    }
+
+                }else {
+                    JOptionPane.showMessageDialog(null, "Thể loại không có thay đổi");
+                }
             }
         });
         /*========================END HANDLE CLICK BUTTON OF CATEGORY====================================*/
     }
 
     public void LoadDataTableCategory(){
-//        User_DTO user = new User_DTO();
-//        JSONArray json = new JSONArray(Handle_API_Tour_Category.Fetch_API_Tour_Category("tourCategories?Page=1&Limit=100", user.getToken()));
-////        Vector<Vector<String>> dataList = new Vector<>();
-//        modelTableCategoryTour.setRowCount(0);
-//        for (int i = 0; i < json.length(); i++) {
-//
-//            JSONObject jsonObj;
-//            try {
-//                jsonObj = json.getJSONObject(i);
-//                Vector<String> data = new Vector<>();
-//
-//                data.add(jsonObj.get("id").toString());
-//                data.add(jsonObj.get("name").toString());
-//
-//                modelTableCategoryTour.addRow(data);
-//            } catch (JSONException ex) {
-//                Logger.getLogger(GUI_Table_Tour_Management.class.getName()).log(Level.SEVERE, null, ex);
-//            }
-//
-//        }
-//        tableCategoryTour.setModel(modelTableCategoryTour);
+        UserDTO user = new UserDTO();
+        JSONArray json = new JSONArray(HandleApiCategory.GetAllCategory("categories?Page=1", user.getToken()));
+//        Vector<Vector<String>> dataList = new Vector<>();
+        modelTableCategoryTour.setRowCount(0);
+        for (int i = 0; i < json.length(); i++) {
 
+            JSONObject jsonObj;
+            try {
+                jsonObj = json.getJSONObject(i);
+                Vector<String> data = new Vector<>();
 
+                data.add(jsonObj.get("id").toString());
+                data.add(jsonObj.get("name").toString());
+
+                modelTableCategoryTour.addRow(data);
+            } catch (JSONException ex) {
+                Logger.getLogger(Gui_Table_Category.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+        }
+        tableCategoryTour.setModel(modelTableCategoryTour);
     }
 
     public void LoadDataTableCategoryAfterSearch(String parameter){
@@ -438,12 +449,12 @@ public class Gui_Table_Category extends JPanel{
         return s == null || s.trim().isEmpty();
     }
 
-//    public static boolean checkDifferent(String name, Tour_Category_DTO category_dto){
-//        if(name.equals(category_dto.getCategoryName())== true ){
-//            return true;
-//        }
-//        return false;
-//    }
+    public static boolean checkDifferent(String name, CategoryDTO categoryDTO){
+        if(name.equals(categoryDTO.getCategoryName())== true ){
+            return true;
+        }
+        return false;
+    }
 
     public void clearTextFieldCategory(){
         txtNameCategory.setText("");

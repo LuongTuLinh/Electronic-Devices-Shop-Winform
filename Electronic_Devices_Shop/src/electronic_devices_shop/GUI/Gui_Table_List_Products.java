@@ -5,6 +5,16 @@
  */
 package electronic_devices_shop.GUI;
 
+import electronic_devices_shop.DTO.CategoryDTO;
+import electronic_devices_shop.DTO.UserDTO;
+import electronic_devices_shop.Handle_API.HandleApiCategory;
+import electronic_devices_shop.Handle_API.HandleApiProduct;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Font;
@@ -13,6 +23,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.plaf.basic.BasicScrollBarUI;
@@ -35,7 +47,7 @@ public class Gui_Table_List_Products extends JPanel{
     /*************DECLARE ELEMENT JPANEL HEADER********************/
     private JLabel labelSearch;
     private JTextField txtSearch;
-    private JComboBox<String> comboBoxStatusTour;
+    private static JComboBox<CategoryDTO> comboBoxCategoryTour;
     private DefaultListCellRenderer listRenderer;
     private JButton buttonSearchTour;
 
@@ -77,10 +89,10 @@ public class Gui_Table_List_Products extends JPanel{
         panelHeader.setBorder(blackline);
 
         labelSearch = new JLabel("Tìm kiếm:");
-        labelSearch.setBounds(30,19,80,25);
+        labelSearch.setBounds(130,19,80,25);
 
         txtSearch = new JTextField();
-        txtSearch.setBounds(95,19,250,25);
+        txtSearch.setBounds(195,19,280,25);
 
 //                lbIconSearch = new JLabel();
 //                lbIconSearch.setBounds(360,18,25,25);
@@ -88,6 +100,12 @@ public class Gui_Table_List_Products extends JPanel{
 
         listRenderer = new DefaultListCellRenderer();
         listRenderer.setHorizontalAlignment(DefaultListCellRenderer.CENTER); // center-aligned items
+
+        comboBoxCategoryTour = new JComboBox<>();
+        loadCategoryTourComboBox();
+        comboBoxCategoryTour.setBounds(570,16,145,30);
+        comboBoxCategoryTour.setFont(new Font("Segoe",Font.BOLD,13));
+        comboBoxCategoryTour.setRenderer(listRenderer);
 
         buttonSearchTour = new JButton("Tìm kiếm");
         buttonSearchTour.setBackground(new Color(32, 171, 214));
@@ -100,7 +118,7 @@ public class Gui_Table_List_Products extends JPanel{
         panelHeader.add(labelSearch);
         panelHeader.add(txtSearch);
         //panelHeader.add(lbIconSearch);
-//        panelHeader.add(comboBoxStatusTour);
+        panelHeader.add(comboBoxCategoryTour);
         panelHeader.add(buttonSearchTour);
         /***************END ADD ELEMENT FOR PANEL HEADER**********************/
 
@@ -195,14 +213,12 @@ public class Gui_Table_List_Products extends JPanel{
         columnNames.add("Product Id");
         columnNames.add("Product Name");
         columnNames.add("Product Category");
-        columnNames.add("Product Status");
+        columnNames.add("Product Unit");
+        columnNames.add("Product Quantity");
         columnNames.add("Product Price");
-        String data[][] = { { "101", "Tran Van Minh", "laptop", "con hang", "139103" }};
-        String column[] = { "Product Id", "Product Name", "Product Category", "Product Status", "Product Price" };
-
-
-        //modelTableTour = new DefaultTableModel(columnNames, 0);
-        tableTour = new JTable(data, column);
+        modelTableTour = new DefaultTableModel(columnNames, 0);
+        tableTour = new JTable(modelTableTour);
+        LoadDataTable();
 
 
 
@@ -222,11 +238,16 @@ public class Gui_Table_List_Products extends JPanel{
         rightRendererPrice.setHorizontalAlignment(JLabel.CENTER);
 
         /****************SET SIZE COLUMN OF TABLE***********************/
-//        tableTour.getColumnModel().getColumn(0).setPreferredWidth(100);
-//        tableTour.getColumnModel().getColumn(1).setPreferredWidth(550);
+        tableTour.getColumnModel().getColumn(0).setPreferredWidth(80);
+//        tableTour.getColumnModel().getColumn(0).setCellRenderer(rightRenderer);
+//
+        tableTour.getColumnModel().getColumn(1).setPreferredWidth(280);
+//
 //        tableTour.getColumnModel().getColumn(2).setPreferredWidth(130);
+//
 //        tableTour.getColumnModel().getColumn(3).setPreferredWidth(80);
 //        tableTour.getColumnModel().getColumn(3).setCellRenderer(rightRenderer);
+//
 //        tableTour.getColumnModel().getColumn(4).setPreferredWidth(95);
 //        tableTour.getColumnModel().getColumn(4).setCellRenderer(rightRendererPrice);
         /****************SET SIZE COLUMN OF TABLE***********************/
@@ -265,10 +286,13 @@ public class Gui_Table_List_Products extends JPanel{
 
                 if(row == -1)
                 {
-                    JOptionPane.showMessageDialog(null, "Vui lòng chọn Tour cần xem");
+                    JOptionPane.showMessageDialog(null, "Vui lòng chọn Tour cần sửa");
                 }
                 else
                 {
+                    String tourId = (tableTour.getModel().getValueAt(row, 0).toString());
+                    UserDTO user = new UserDTO();
+                    HandleApiProduct.GetProductId("products/"+tourId, user.getToken());
                     Gui_Edit_Product edit_product = new Gui_Edit_Product();
                 }
             }
@@ -312,7 +336,13 @@ public class Gui_Table_List_Products extends JPanel{
                             JOptionPane.YES_NO_OPTION,
                             JOptionPane.QUESTION_MESSAGE);
                     if(result == JOptionPane.YES_OPTION){
+                        String tourId = (tableTour.getModel().getValueAt(row, 0).toString());
 
+                        UserDTO user = new UserDTO();
+                        String response = HandleApiProduct.sendDeleteProduct("","products/"+tourId,user.getToken());
+                        if(response.equals("success")){
+                            LoadDataTable();
+                        }
                     }else if (result == JOptionPane.NO_OPTION){
 
                     }else {
@@ -323,6 +353,55 @@ public class Gui_Table_List_Products extends JPanel{
             }
         });
         /*------------------------END HANDLE EVENT ONCLICK MOUSE BUTTON-----------------------------*/
+    }
+
+    public static void LoadDataTable(){
+        UserDTO user = new UserDTO();
+        JSONArray json = new JSONArray(HandleApiProduct.GetAllProducts("products?Page=1", user.getToken()));
+        modelTableTour.setRowCount(0);
+        for (int i = 0; i < json.length(); i++) {
+
+            JSONObject jsonObj;
+            try {
+                jsonObj = json.getJSONObject(i);
+                Vector<String> data = new Vector<>();
+
+                data.add(jsonObj.get("id").toString());
+                data.add(jsonObj.get("name").toString());
+
+                JSONParser parser = new JSONParser();
+                org.json.simple.JSONObject myObject;
+                myObject = (org.json.simple.JSONObject) parser.parse(jsonObj.get("category").toString());
+                data.add(myObject.get("name").toString());
+                data.add(jsonObj.get("unit").toString());
+                data.add(jsonObj.get("quantity").toString());
+                long price = Long.parseLong(jsonObj.get("price").toString());
+                String priceTour = java.text.NumberFormat.getIntegerInstance().format(price);
+                data.add(priceTour);
+
+                modelTableTour.addRow(data);
+            } catch (JSONException | ParseException ex) {
+                Logger.getLogger(Gui_Table_List_Products.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+        }
+        tableTour.setModel(modelTableTour);
+    }
+    public static void loadCategoryTourComboBox(){
+        UserDTO user = new UserDTO();
+        JSONArray array = new JSONArray(HandleApiCategory.GetAllCategory("categories?Page=1", user.getToken()));
+        comboBoxCategoryTour.addItem(new CategoryDTO("0", "--Thể Loại --"));
+        for(int i = 0; i < array.length(); i++){
+            try {
+                JSONObject jsonObject = (JSONObject) array.get(i);
+                String id = jsonObject.get("id").toString();
+                String name = jsonObject.get("name").toString();
+                comboBoxCategoryTour.addItem(new CategoryDTO(id, name));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
     }
 
 }

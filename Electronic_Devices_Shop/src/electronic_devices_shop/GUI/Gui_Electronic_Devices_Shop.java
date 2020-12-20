@@ -5,15 +5,13 @@
  */
 package electronic_devices_shop.GUI;
 
+import electronic_devices_shop.DTO.UserDTO;
+
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.net.URI;
-import javax.imageio.ImageIO;
 import javax.swing.*;
 
 /**
@@ -106,6 +104,7 @@ public class Gui_Electronic_Devices_Shop {
 
         lbUserName = new JLabel("LinhLee");
         lbUserName.setBounds(820,7,100,25);
+        lbUserName.setText(UserDTO.getFirstName().toUpperCase()+" "+UserDTO.getLastName().toUpperCase());
         lbUserName.setForeground(new Color(102,102,102));
 
         lbiconClose = new JLabel();
@@ -600,6 +599,6 @@ public class Gui_Electronic_Devices_Shop {
     }
     public static void signOutAccount(){
         jframe.dispose();
-        Gui_Login gui_login  = new Gui_Login();
+        GuiLogin gui_login  = new GuiLogin();
     }
 }

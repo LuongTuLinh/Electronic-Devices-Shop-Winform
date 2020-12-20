@@ -5,6 +5,9 @@
  */
 package electronic_devices_shop.GUI;
 
+import electronic_devices_shop.DTO.UserDTO;
+import electronic_devices_shop.Handle_API.HandleApiLogin;
+
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -35,7 +38,7 @@ import javax.swing.JTextField;
 /**
  * @author LinhLee
  */
-public class Gui_Login extends JFrame {
+public class GuiLogin extends JFrame {
 
     private JPanel panelLogin;
     private JLabel lbIconClose;
@@ -58,7 +61,7 @@ public class Gui_Login extends JFrame {
     private JButton btnLogin;
 
 
-    Gui_Login() {
+    GuiLogin() {
         GUI();
     }
 
@@ -235,24 +238,22 @@ public class Gui_Login extends JFrame {
         btnLogin.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                Gui_Electronic_Devices_Shop electronic_devices_shop = new Gui_Electronic_Devices_Shop();
-                dispose();
-//                String email = txtUsername.getText();
-//                String password = txtPassword.getText();
-//
-//                String input = "{\"email\": \"" + email + "\",\"password\":\"" + password + "\"} ";
-//
-//                Handle_API_Login login = new Handle_API_Login();
-//                Handle_API_Login.Login(input, "auth/login", "");
-//                User_DTO user = new User_DTO();
-//                if (user.getToken() != null) {
-//                    JOptionPane.showMessageDialog(null, "Đăng nhập thành công");
-//
-//                    Gui_Electronic_Devices_Shop tour_Management = new Gui_Electronic_Devices_Shop();
-//                    dispose();
-//                } else {
-//                    //JOptionPane.showMessageDialog(null, "Đăng nhập thất bại, vui lòng thử lại");
-//                }
+
+                String email = txtUsername.getText();
+                String password = txtPassword.getText();
+
+                String input = "{\"email\": \"" + email + "\",\"password\":\"" + password + "\"} ";
+
+                HandleApiLogin login = new HandleApiLogin();
+                String response = (String) login.Login(input, "auth/login", "");
+                if (response.equals("success")) {
+                    JOptionPane.showMessageDialog(null, "Đăng nhập thành công");
+
+                    Gui_Electronic_Devices_Shop electronic_devices_shop = new Gui_Electronic_Devices_Shop();
+                    dispose();
+                } else {
+                    //JOptionPane.showMessageDialog(null, "Đăng nhập thất bại, vui lòng thử lại");
+                }
 
             }
         });
