@@ -5,7 +5,6 @@
  */
 package electronic_devices_shop.GUI;
 
-import electronic_devices_shop.DTO.UserDTO;
 import electronic_devices_shop.Handle_API.HandleApiLogin;
 
 import java.awt.Color;
@@ -16,15 +15,8 @@ import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Paint;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -249,7 +241,7 @@ public class GuiLogin extends JFrame {
                 if (response.equals("success")) {
                     JOptionPane.showMessageDialog(null, "Đăng nhập thành công");
 
-                    Gui_Electronic_Devices_Shop electronic_devices_shop = new Gui_Electronic_Devices_Shop();
+                    GuiElectronicDevices_Shop electronic_devices_shop = new GuiElectronicDevices_Shop();
                     dispose();
                 } else {
                     //JOptionPane.showMessageDialog(null, "Đăng nhập thất bại, vui lòng thử lại");

@@ -11,14 +11,10 @@ import electronic_devices_shop.Handle_API.HandleApiProduct;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Font;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Vector;
@@ -249,7 +245,10 @@ public class GuiTableGoodsDeliveryNotes extends JPanel{
                 }
                 else
                 {
-                    JOptionPane.showMessageDialog(null, "Chua lam !!!!!");
+                    String tourId = (tableTour.getModel().getValueAt(row, 0).toString());
+                    UserDTO user = new UserDTO();
+                    HandleApiGoodsDeliveryNote.GetGRNId("goodsReceivingNotes/"+tourId, user.getToken());
+                    GuiDetailGoodsReceivingNote detail_product = new GuiDetailGoodsReceivingNote();
                 }
             }
         });
@@ -257,6 +256,7 @@ public class GuiTableGoodsDeliveryNotes extends JPanel{
         btnAddTour.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
+                GuiAddProductToGoodsDeliveryNotes addProductToGoodsDeliveryNotes = new GuiAddProductToGoodsDeliveryNotes();
                 GuiAddGoodsDeliveryNotes addGoodsDeliveryNotes = new GuiAddGoodsDeliveryNotes();
             }
         });
@@ -321,7 +321,7 @@ public class GuiTableGoodsDeliveryNotes extends JPanel{
 
                 modelTableTour.addRow(data);
             } catch (JSONException ex) {
-                Logger.getLogger(Gui_Table_List_Products.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(GuiTableListProducts.class.getName()).log(Level.SEVERE, null, ex);
             }
 
         }

@@ -31,6 +31,29 @@ public class HandleApiProduct {
         return null;
 
     }
+
+    public static JSONArray GetQuantityLog(String endpoint, String token){
+        JSONParser parser = new JSONParser();
+        JSONObject myObject;
+        try {
+            myObject = (JSONObject) parser.parse(ApiRequester.fetchAPI(endpoint, token));
+
+            JSONObject data = (JSONObject) myObject.get("data");
+            if(Integer.parseInt(data.get("id").toString()) >= 1){
+                JSONObject res = (JSONObject) myObject.get("data");
+                JSONArray quantityLog = (JSONArray) res.get("quantityLogs");
+                System.out.println("con cac: "+quantityLog);
+                return quantityLog;
+            }else {
+                return null;
+            }
+        } catch (ParseException ex) {
+            Logger.getLogger(HandleApiProduct.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+
+    }
+
     public static void GetProductId(String endpoint, String token){
         JSONParser parser = new JSONParser();
         JSONObject myObject;
@@ -44,6 +67,7 @@ public class HandleApiProduct {
             productDTO.setUnit(data.get("unit").toString());
             productDTO.setPrice(data.get("price").toString());
             productDTO.setCategory(data.get("categoryId").toString());
+            productDTO.setQuantity(data.get("quantity").toString());
         } catch (ParseException ex) {
             Logger.getLogger(HandleApiProduct.class.getName()).log(Level.SEVERE, null, ex);
         }

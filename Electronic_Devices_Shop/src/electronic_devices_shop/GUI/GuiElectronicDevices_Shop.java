@@ -18,7 +18,7 @@ import javax.swing.*;
  *
  * @author BANANA_TEAM
  */
-public class Gui_Electronic_Devices_Shop {
+public class GuiElectronicDevices_Shop {
 
     private static JFrame jframe ;
     /***********DECLARE JPANE*************/
@@ -64,7 +64,7 @@ public class Gui_Electronic_Devices_Shop {
     private JSeparator sptBelowMenu;
     /***********END DECLARE COMPONENT JPANE MENU*************/
 
-    public Gui_Electronic_Devices_Shop(){
+    public GuiElectronicDevices_Shop(){
         init();
 
     }
@@ -217,7 +217,7 @@ public class Gui_Electronic_Devices_Shop {
         btnAttractionManagement.setFocusPainted(false);
         btnAttractionManagement.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
-        btnCategoryManagement = new JButton("Goods Delivery Notes");
+        btnCategoryManagement = new JButton("Goods Receving Note");
         btnCategoryManagement.setBackground(new Color(46, 46, 46));
         btnCategoryManagement.setBounds(5,260,190,30);
         btnCategoryManagement.setForeground(new Color(255,255,255));
@@ -385,7 +385,7 @@ public class Gui_Electronic_Devices_Shop {
             @Override
             public void mouseClicked(MouseEvent e){
                 panelProcessFunction.removeAll();
-                panelProcessFunction.add(new Gui_Table_List_Products());
+                panelProcessFunction.add(new GuiTableListProducts());
                 jframe.repaint();
             }
         });
@@ -402,7 +402,7 @@ public class Gui_Electronic_Devices_Shop {
             @Override
             public void mouseClicked(MouseEvent e){
                 panelProcessFunction.removeAll();
-                panelProcessFunction.add(new Gui_Table_Category());
+                panelProcessFunction.add(new GuiTableCategory());
                 jframe.repaint();
             }
         });

@@ -2,28 +2,26 @@ package electronic_devices_shop.GUI;
 
 
 import electronic_devices_shop.DTO.CategoryDTO;
+import electronic_devices_shop.DTO.GoodsReceivingNote;
 import electronic_devices_shop.DTO.ProductDTO;
 import electronic_devices_shop.DTO.UserDTO;
 import electronic_devices_shop.Handle_API.HandleApiCategory;
+import electronic_devices_shop.Handle_API.HandleApiGoodsDeliveryNote;
 import electronic_devices_shop.Handle_API.HandleApiProduct;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.util.regex.Pattern;
-
-import static electronic_devices_shop.GUI.Gui_Table_List_Products.LoadDataTable;
+import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
-public class Gui_Edit_Product extends JFrame {
+public class GuiDetailGoodsReceivingNote extends JFrame {
 
     private static JComboBox<CategoryDTO> comboBoxCategoryTour;
     private JPanel panelAddNewTour;
@@ -46,6 +44,10 @@ public class Gui_Edit_Product extends JFrame {
     private JTextField txtUnit;
     private JSeparator sptUnit;
 
+    private JLabel labelQuantity;
+    private JTextField txtQuantity;
+    private JSeparator sptQuantity;
+
     private JLabel labelVND;
 
     private JLabel labelPriceTour;
@@ -56,26 +58,30 @@ public class Gui_Edit_Product extends JFrame {
     private JTextArea textAreaDescription;
     private JScrollPane scrollPaneDescription;
 
+    private JLabel labelQuantityLog;
+    private JTextArea textAreaQuantityLog;
+    private JScrollPane scrollPaneQuantityLog;
+
     private JLabel labelCategoryTour;
 //    private static JComboBox<Tour_Category_DTO> comboBoxCategoryTour;
 
     private JButton buttonSaveNewTour;
     private JButton buttonClearField;
 
-    public Gui_Edit_Product(){
+    public GuiDetailGoodsReceivingNote(){
         GUI();
     }
     public void GUI(){
-        setSize(450, 545);
+        setSize(450, 615);
         setLocationRelativeTo(null);
         setLayout(null);
         getContentPane().setBackground(Color.BLACK);
-        setTitle("Edit Product Is Selected");
+        setTitle("Detail Goods Receiving Note Is Selected");
         /************************************ PANEL ADD NEW TOUR **************************************/
         panelAddNewTour = new JPanel();
         panelAddNewTour.setLayout(null);
         panelAddNewTour.setBackground(Color.white);
-        panelAddNewTour.setBounds(0,1, 450, 499);
+        panelAddNewTour.setBounds(0,1, 450, 614);
 
         sptAboveLeftInHeader = new JSeparator();
         sptAboveLeftInHeader.setBounds(10,12,120,10);
@@ -93,20 +99,20 @@ public class Gui_Edit_Product extends JFrame {
         sptUnderRightInHeader.setBounds(350,27,80,10);
         sptUnderRightInHeader.setBackground(new Color(23, 23, 23));
 
-        lbTitle = new JLabel("Edit Product");
-        lbTitle.setBounds(160,18,150,25);
+        lbTitle = new JLabel("Detail Goods Receiving Note");
+        lbTitle.setBounds(100,18,245,25);
         lbTitle.setForeground(new Color(80, 80, 80));
-        lbTitle.setFont(new Font("Times New Roman",1,19));
+        lbTitle.setFont(new Font("Times New Roman",1,18));
 
         labelId = new JLabel(" Id :",JLabel.CENTER);
         labelId.setFont(new Font("Segoe",Font.BOLD,12));
-        labelId.setBounds(5,50,80,30);
+        labelId.setBounds(30,50,80,30);
 
         txtId = new JTextField();
         txtId.setBounds(90,48,80,30);
         txtId.setBorder(null);
         txtId.setFont(new Font(Font.SERIF, Font.PLAIN, 15));
-        txtId.setText(ProductDTO.getId());
+        txtId.setText(GoodsReceivingNote.getId());
         txtId.setEditable(false);
 
         sptId = new JSeparator();
@@ -114,15 +120,16 @@ public class Gui_Edit_Product extends JFrame {
         sptId.setBackground(new Color(0,0,0));
 
         /*========================= TEXTFIELD NAME TOUR ========================*/
-        labelNameTour = new JLabel(" Name :",JLabel.CENTER);
+        labelNameTour = new JLabel("Supplier Name:",JLabel.CENTER);
         labelNameTour.setFont(new Font("Segoe",Font.BOLD,12));
-        labelNameTour.setBounds(5,100,80,30);
+        labelNameTour.setBounds(-14,100,120,30);
 
         txtNameTour = new JTextField();
         txtNameTour.setBounds(90,98,300,30);
         txtNameTour.setBorder(null);
         txtNameTour.setFont(new Font(Font.SERIF, Font.PLAIN, 15));
-        txtNameTour.setText(ProductDTO.getName());
+        txtNameTour.setText(GoodsReceivingNote.getSupplierName());
+        txtNameTour.setEditable(false);
 
         sptNameTour = new JSeparator();
         sptNameTour.setBounds(90,128,300,30);
@@ -130,7 +137,7 @@ public class Gui_Edit_Product extends JFrame {
         /*=========================END TEXTFIELD NAME TOUR ================*/
 
         /*========================= TEXTFIELD PRICE TOUR ===================*/
-        labelPriceTour = new JLabel("Price :",JLabel.CENTER);
+        labelPriceTour = new JLabel("Total Price :",JLabel.CENTER);
         labelPriceTour.setFont(new Font("Segoe",Font.BOLD,12));
         labelPriceTour.setBounds(5,145,80,30);
 
@@ -138,9 +145,10 @@ public class Gui_Edit_Product extends JFrame {
         txtPriceTour.setBounds(90,143,90,30);
         //txtPriceTour.setBorder(null);
         txtPriceTour.setFont(new Font(Font.SERIF, Font.PLAIN, 15));
-        long price = Long.parseLong(ProductDTO.getPrice());
+        long price = Long.parseLong(GoodsReceivingNote.getTotalPrice());
         String priceTour = java.text.NumberFormat.getIntegerInstance().format(price);
         txtPriceTour.setText(priceTour);
+        txtPriceTour.setEditable(false);
 
         labelVND = new JLabel(" VND",JLabel.CENTER);
         labelVND.setFont(new Font("Segoe",Font.BOLD,12));
@@ -152,58 +160,37 @@ public class Gui_Edit_Product extends JFrame {
         /*========================= END TEXTFIELD PRICE TOUR ===================*/
 
         //=========================COMBOBOX CATEGORY TOUR=========================//
-        labelCategoryTour = new JLabel("Category:",JLabel.CENTER);
-        labelCategoryTour.setFont(new Font("Segoe",Font.BOLD,12));
-        labelCategoryTour.setBounds(9,202,80,30);
-
-        comboBoxCategoryTour = new JComboBox<>();
-        loadCategoryTourComboBox();
-
-        comboBoxCategoryTour.setBounds(90,196,150,30);
-        comboBoxCategoryTour.setFont(new Font("Segoe",Font.BOLD,13));
-        //=====================END COMBOBOX CATEGORY TOUR=====================//
-
-        labelUnit = new JLabel(" Unit :",JLabel.CENTER);
-        labelUnit.setFont(new Font("Segoe",Font.BOLD,12));
-        labelUnit.setBounds(9,250,80,30);
-
-        txtUnit = new JTextField();
-        txtUnit.setBounds(90,248,300,30);
-        txtUnit.setBorder(null);
-        txtUnit.setFont(new Font(Font.SERIF, Font.PLAIN, 15));
-        txtUnit.setText(ProductDTO.getUnit());
-
-        sptUnit = new JSeparator();
-        sptUnit.setBounds(90,278,300,10);
-        sptUnit.setBackground(new Color(0,0,0));
 
         labelSpecification = new JLabel("Description :",JLabel.CENTER);
         labelSpecification.setFont(new Font("Segoe",Font.BOLD,12));
-        labelSpecification.setBounds(5,300,120,30);
+        labelSpecification.setBounds(5,200,120,30);
 
         textAreaDescription = new JTextArea(10, 10);
         textAreaDescription.setLineWrap(true);
         textAreaDescription.setWrapStyleWord(true);
         textAreaDescription.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         textAreaDescription.setFont(new Font("Arial, Helvetica, sans-serif", Font.PLAIN, 14));
-        textAreaDescription.setText(ProductDTO.getDescription());
+        textAreaDescription.setText(GoodsReceivingNote.getDescription());
+        textAreaDescription.setEditable(false);
 
         scrollPaneDescription = new JScrollPane(textAreaDescription);
-        scrollPaneDescription.setBounds(45,335,360,100);
+        scrollPaneDescription.setBounds(45,235,360,100);
 
-        buttonSaveNewTour = new JButton(" Save ");
-        buttonSaveNewTour.setBackground(new Color(255, 255, 255));
-        buttonSaveNewTour.setFont(new Font("Segoe",Font.BOLD,13));
-        buttonSaveNewTour.setForeground(Color.BLACK);
-        buttonSaveNewTour.setBounds(65,450,100,30);
-        buttonSaveNewTour.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        labelQuantityLog = new JLabel("Products Information :",JLabel.CENTER);
+        labelQuantityLog.setFont(new Font("Segoe",Font.BOLD,12));
+        labelQuantityLog.setBounds(5,340,150,30);
 
-        buttonClearField = new JButton(" Refresh ");
-        buttonClearField.setBackground(new Color(255, 255, 255));
-        buttonClearField.setFont(new Font("Segoe",Font.BOLD,13));
-        buttonClearField.setForeground(Color.BLACK);
-        buttonClearField.setBounds(270,450,100,30);
-        buttonClearField.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        textAreaQuantityLog = new JTextArea(10, 12);
+        textAreaQuantityLog.setLineWrap(true);
+        textAreaQuantityLog.setWrapStyleWord(true);
+        textAreaQuantityLog.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        textAreaQuantityLog.setFont(new Font("Arial, Helvetica, sans-serif", Font.PLAIN, 14));
+        textAreaQuantityLog.setEditable(false);
+
+        scrollPaneQuantityLog = new JScrollPane(textAreaQuantityLog);
+        scrollPaneQuantityLog.setBounds(45,375,360,160);
+
+        LoadQuatityLog();
 
         /*****************ADD ELEMENT FOR PANEL ADD NEW TOUR*****************************/
         panelAddNewTour.add(sptAboveLeftInHeader);
@@ -220,9 +207,13 @@ public class Gui_Edit_Product extends JFrame {
         panelAddNewTour.add(txtNameTour);
         panelAddNewTour.add(sptNameTour);
 
-        panelAddNewTour.add(labelUnit);
-        panelAddNewTour.add(txtUnit);
-        panelAddNewTour.add(sptUnit);
+//        panelAddNewTour.add(labelUnit);
+//        panelAddNewTour.add(txtUnit);
+//        panelAddNewTour.add(sptUnit);
+//
+//        panelAddNewTour.add(labelQuantity);
+//        panelAddNewTour.add(txtQuantity);
+//        panelAddNewTour.add(sptQuantity);
 
 
         panelAddNewTour.add(labelPriceTour);
@@ -230,67 +221,22 @@ public class Gui_Edit_Product extends JFrame {
         panelAddNewTour.add(sptPriceTour);
         panelAddNewTour.add(labelVND);
 
-        panelAddNewTour.add(labelCategoryTour);
-        panelAddNewTour.add(comboBoxCategoryTour);
+//        panelAddNewTour.add(labelCategoryTour);
+//        panelAddNewTour.add(comboBoxCategoryTour);
 
         panelAddNewTour.add(labelSpecification);
         panelAddNewTour.add(scrollPaneDescription);
 
-        panelAddNewTour.add(buttonClearField);
-        panelAddNewTour.add(buttonSaveNewTour);
+        panelAddNewTour.add(labelQuantityLog);
+        panelAddNewTour.add(scrollPaneQuantityLog);
+
         /*******************END ADD ELEMENT FOR PANEL ADD NEW TOUR**************************/
         /*********************************END PANEL ADD NEW TOUR*****************************************/
         add(panelAddNewTour);
         setVisible(true);
 
         /********************************* HANDLE BUTTON ADD NEW TOUR *****************************************/
-        buttonClearField.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                clearTextField();
-            }
-        });
 
-        buttonSaveNewTour.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                UserDTO user = new UserDTO();
-                String name = txtNameTour.getText();
-                String description = textAreaDescription.getText();
-                String unit = txtUnit.getText();
-                String price = txtPriceTour.getText().replace(",","");
-                String price_PATTERN = "^[1-9]([0-9])*$";
-                CategoryDTO category_dto = (CategoryDTO) (comboBoxCategoryTour.getSelectedItem());
-                String category = category_dto.getCategoryId();
-                if(checkDifferentTour(name, description, price, unit, category)==false){
-                    if(Pattern.matches(price_PATTERN, price)==false){
-                        JOptionPane.showMessageDialog(null, "Lỗi! Giá  không hợp lệ, và giá phải lớn hơn 0.");
-                    } else {
-                        String parameter = "{\"id\":"+txtId.getText()+",\"name\":\""+name+"\",\"description\":\""+description+"\",\"unit\":\""+unit+"\",\"sku\":\"string\",\"price\":"+price+",\"categoryId\":"+category+"}";
-                        //APIRequester.sendPUT(parameter, "products/"+ProductDTO.getId(), user.getToken());
-                        String response = HandleApiProduct.sendPUTEditProduct(parameter, "products/"+ProductDTO.getId(), user.getToken());
-                        if(response.equals("success")){
-                            JOptionPane.showMessageDialog(null, "Sửa thành công");
-                            LoadDataTable();
-                            dispose();
-                        }
-
-                    }
-                }else {
-                    JOptionPane.showMessageDialog(null, "Product không có thay đổi");
-                }
-
-            }
-        });
-
-        txtPriceTour.addKeyListener(new KeyAdapter() {
-            public void keyReleased(KeyEvent e) {
-                String price = txtPriceTour.getText();
-                long priceTour = Long.parseLong(price.replace(",",""));
-                String priceNewTour = java.text.NumberFormat.getIntegerInstance().format(priceTour);
-                txtPriceTour.setText(priceNewTour);
-            }
-        });
         /*********************************END HANDLE BUTTON ADD NEW TOUR *****************************************/
     }
     public static void loadCategoryTourComboBox(){
@@ -311,24 +257,34 @@ public class Gui_Edit_Product extends JFrame {
         }
 
     }
-    public void clearTextField(){
-        txtNameTour.setText("");
-        txtPriceTour.setText("");
-        textAreaDescription.setText("");
-        txtUnit.setText("");
-    }
-    public static boolean empty( final String s ) {
-        // Null-safe, short-circuit evaluation.
-        return s == null || s.trim().isEmpty();
-    }
-    public static boolean checkDifferentTour(String name, String specification,
-                                             String price, String unit, String category ){
-        if(name.equals(ProductDTO.getName())== true &&
-                specification.equals(ProductDTO.getDescription())== true &&
-                price.equals(ProductDTO.getPrice())== true && unit.equals(ProductDTO.getUnit())== true
-                && category.equals(ProductDTO.getCategory()) == true){
-            return true;
+    public void LoadQuatityLog(){
+        textAreaQuantityLog.setText("");
+        UserDTO user = new UserDTO();
+        JSONArray json = new JSONArray(HandleApiGoodsDeliveryNote.GetQuantityLog("goodsReceivingNotes/"+GoodsReceivingNote.getId(), user.getToken()));
+        String data = "";
+        for (int i = 0; i < json.length(); i++) {
+
+            JSONObject jsonObj;
+            try {
+                jsonObj = json.getJSONObject(i);
+
+                String id = jsonObj.get("id").toString();
+                String quantity = jsonObj.get("quantity").toString();
+                String unitPrice = jsonObj.get("unitPrice").toString();
+                String totalPrice = jsonObj.get("totalPrice").toString();
+
+                JSONParser parser = new JSONParser();
+                org.json.simple.JSONObject myObject;
+                myObject = (org.json.simple.JSONObject) parser.parse(jsonObj.get("product").toString());
+                String name = myObject.get("name").toString();
+
+                data += "("+(i+1)+") "+name+" | quantity: "+quantity+" | uniPrice: "+unitPrice+" | totalPrice:"+totalPrice+"\n";
+
+            } catch (JSONException | ParseException ex) {
+                Logger.getLogger(GuiDetailProduct.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
         }
-        return false;
+        textAreaQuantityLog.setText(data);
     }
 }

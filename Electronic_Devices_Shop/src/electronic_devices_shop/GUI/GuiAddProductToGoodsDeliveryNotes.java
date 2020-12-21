@@ -1,5 +1,6 @@
 package electronic_devices_shop.GUI;
 
+import electronic_devices_shop.DTO.SelectedDTO;
 import electronic_devices_shop.DTO.UserDTO;
 import electronic_devices_shop.Handle_API.HandleApiProduct;
 import org.json.JSONArray;
@@ -14,16 +15,22 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
-public class GuiAddProductToGoodsDeliveryNotes extends JFrame {
+public class GuiAddProductToGoodsDeliveryNotes {
+
+    public static JFrame myFrame;
 
     private JPanel panelListCostType;
 
     private JLabel labelTitle;
+
+    public static ArrayList<SelectedDTO> nameArrayList = new ArrayList<>();
+    public static ArrayList<SelectedDTO> idArrayList = new ArrayList<>();
 
     public static HashMap<String, String> dataListCostType ;
     public static DefaultListModel<String> modelListCostType;
@@ -39,29 +46,34 @@ public class GuiAddProductToGoodsDeliveryNotes extends JFrame {
     private JTextField txtUniPrice;
     private JSeparator sptUniPrice;
 
+    private JLabel labelDescriptionCostType;
+    private JTextArea textAreaDescription;
+    private JScrollPane scrollPaneCostType;
 
     public GuiAddProductToGoodsDeliveryNotes(){
         GUI();
     }
     public void GUI(){
-        setSize(450, 520);
-        setLocationRelativeTo(null);
-        setLayout(null);
-        getContentPane().setBackground(Color.BLACK);
-        setTitle("Add Product To Goods Delivery Note");
+        myFrame = new JFrame();
+        myFrame.setSize(450, 580);
+        //setLocationRelativeTo(null);
+        myFrame.setLocation(705, 70);
+        myFrame.setLayout(null);
+        myFrame.getContentPane().setBackground(Color.BLACK);
+        myFrame.setTitle("Add Product To Goods Delivery Note");
 
         panelListCostType =new JPanel();
         panelListCostType.setLayout(null);
         panelListCostType.setBackground(Color.white);
         panelListCostType.setBounds(0,1, 450, 549);
 
-        labelTitle = new JLabel("- - - DANH SÁCH SẢN PHẨM - - - ",JLabel.CENTER);
+        labelTitle = new JLabel("- - Thêm Sản Phẩm Vào Phiếu Nhập - - ",JLabel.CENTER);
         labelTitle.setFont(new Font("Segoe",Font.BOLD,14));
         labelTitle.setBounds(0,10,450,30);
 
         scrollPaneAllCostType = new JScrollPane();
 
-        scrollPaneAllCostType.setBounds(20, 50, 400, 230);
+        scrollPaneAllCostType.setBounds(20, 50, 400, 180);
         scrollPaneAllCostType.getVerticalScrollBar().setUI(new BasicScrollBarUI() {
             @Override
             protected void configureScrollBarColors() {
@@ -84,30 +96,45 @@ public class GuiAddProductToGoodsDeliveryNotes extends JFrame {
         //**************TEXTFIELD PRICE COST TYPE*******************//
         labelPriceCostType = new JLabel("Quantity :",JLabel.CENTER);
         labelPriceCostType.setFont(new Font("Segoe",Font.BOLD,12));
-        labelPriceCostType.setBounds(30,300,120,30);
+        labelPriceCostType.setBounds(30,250,120,30);
 
         txtPriceCostType = new JTextField();
-        txtPriceCostType.setBounds(135,298,180,30);
+        txtPriceCostType.setBounds(135,248,180,30);
         txtPriceCostType.setFont(new Font(Font.SERIF, Font.PLAIN, 15));
 
 
         sptPriceCostType = new JSeparator();
-        sptPriceCostType.setBounds(135,328,180,10);
+        sptPriceCostType.setBounds(135,278,180,10);
         sptPriceCostType.setBackground(new Color(0,0,0));
 
         labelUniPrice = new JLabel("uni Price :",JLabel.CENTER);
         labelUniPrice.setFont(new Font("Segoe",Font.BOLD,12));
-        labelUniPrice.setBounds(30,350,120,30);
+        labelUniPrice.setBounds(30,300,120,30);
 
         txtUniPrice = new JTextField();
-        txtUniPrice.setBounds(135,348,180,30);
+        txtUniPrice.setBounds(135,298,180,30);
         txtUniPrice.setFont(new Font(Font.SERIF, Font.PLAIN, 15));
 
 
         sptUniPrice = new JSeparator();
-        sptUniPrice.setBounds(135,378,180,10);
+        sptUniPrice.setBounds(135,328,180,10);
         sptUniPrice.setBackground(new Color(0,0,0));
         //**************END TEXTFIELD PRICE COST TYPE*******************//
+
+        //**************TEXTFIELD TEXTFIELD DESCRIPTION COST TYPE *******************//
+        labelDescriptionCostType = new JLabel("Thông Tin :",JLabel.CENTER);
+        labelDescriptionCostType.setFont(new Font("Segoe",Font.BOLD,12));
+        labelDescriptionCostType.setBounds(5,375,120,30);
+
+        textAreaDescription = new JTextArea(10, 10);
+        textAreaDescription.setLineWrap(true);
+        textAreaDescription.setWrapStyleWord(true);
+        textAreaDescription.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        textAreaDescription.setFont(new Font("Arial, Helvetica, sans-serif", Font.PLAIN, 14));
+
+        scrollPaneCostType = new JScrollPane(textAreaDescription);
+        scrollPaneCostType.setBounds(40,400,370,125);
+        //**************END TEXTFIELD TEXTFIELD DESCRIPTION COST TYPE*******************//
 
 
 
@@ -115,7 +142,7 @@ public class GuiAddProductToGoodsDeliveryNotes extends JFrame {
         btnAddCostTypeToGroup.setBackground(new Color(6, 32, 160));
         btnAddCostTypeToGroup.setFont(new Font("Segoe",Font.BOLD,13));
         btnAddCostTypeToGroup.setForeground(Color.WHITE);
-        btnAddCostTypeToGroup.setBounds(170,445,115,30);
+        btnAddCostTypeToGroup.setBounds(170,345,115,30);
         btnAddCostTypeToGroup.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
         panelListCostType.add(labelTitle);
@@ -130,8 +157,11 @@ public class GuiAddProductToGoodsDeliveryNotes extends JFrame {
         panelListCostType.add(txtUniPrice);
         panelListCostType.add(sptUniPrice);
 
-        add(panelListCostType);
-        setVisible(true);
+        panelListCostType.add(labelDescriptionCostType);
+        panelListCostType.add(scrollPaneCostType);
+
+        myFrame.add(panelListCostType);
+        myFrame.setVisible(true);
 
 
         txtPriceCostType.addKeyListener(new KeyAdapter() {
@@ -143,43 +173,43 @@ public class GuiAddProductToGoodsDeliveryNotes extends JFrame {
             }
         });
 
+        txtUniPrice.addKeyListener(new KeyAdapter() {
+            public void keyReleased(KeyEvent e) {
+                String price = txtUniPrice.getText();
+                long priceTour = Long.parseLong(price.replace(",",""));
+                String priceNewTour = java.text.NumberFormat.getIntegerInstance().format(priceTour);
+                txtUniPrice.setText(priceNewTour);
+            }
+        });
+
         btnAddCostTypeToGroup.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
-                JOptionPane.showMessageDialog(null,"Chua lam dc do api thi phai :v");
+                String quantity = txtPriceCostType.getText().replace(",","");;
+                String uniPrice = txtUniPrice.getText().replace(",","");;
+                String price_PATTERN = "^[1-9]([0-9])*$";
+                if(Pattern.matches(price_PATTERN, quantity) == false) {
+                    JOptionPane.showMessageDialog(null, "Lỗi! Vui lòng kiểm tra lại quantity.");
+                }else if(Pattern.matches(price_PATTERN, uniPrice) == false){
+                    JOptionPane.showMessageDialog(null, "Lỗi! Vui lòng kiểm tra lại uniPrice.");
+                } else {
+                    txtPriceCostType.setText("");
+                    txtUniPrice.setText("");
+                    String name = listCostType.getSelectedValue();
+                    SelectedDTO selectedDTO = new SelectedDTO(name, quantity, uniPrice);
+                    nameArrayList.add(selectedDTO);
+                    setTextAreaDescription();
+
+                    String idCostType ="";
+                    for(Object x : dataListCostType.keySet()){
+                        if(listCostType.getSelectedValue().equals(x)){
+                            idCostType = dataListCostType.get(x);
+                        }
+                    }
+                    SelectedDTO selectedId = new SelectedDTO(idCostType, quantity, uniPrice);
+                    idArrayList.add(selectedId);
+
+                }
             }
-//            UserDTO user_dto = new UserDTO();
-//            @Override
-//            public void mouseClicked(MouseEvent e) {
-//
-//                if(listCostType.getSelectedValuesList().isEmpty()){
-//                    JOptionPane.showMessageDialog(null,"Vui lòng chọn chi phí");
-//                }
-//                else {
-//                    String idCostType ="";
-//                    for(Object x : dataListCostType.keySet()){
-//                        if(listCostType.getSelectedValue().equals(x)){
-//                            idCostType = dataListCostType.get(x);
-//                        }
-//                    }
-//                    String price = txtPriceCostType.getText().replace(",","");
-//                    String note = textAreaDescription.getText();
-//                    String price_PATTERN = "^[1-9]([0-9])*$";
-//                    if(Pattern.matches(price_PATTERN, price) == false) {
-//                        JOptionPane.showMessageDialog(null, "Lỗi! Giá chi phí không hợp lệ, và giá tour phải lớn hơn 0.");
-//                    }else {
-//                        String parameter="{\"id\":0,\"groupId\":"+id+",\"costTypeId\":"+idCostType+",\"price\":"+price+",\"note\":\""+note+"\"}";
-//
-//                        String response = Handle_API_Cost_Type.sendPost_Add_Cost_Type(parameter, "groupCosts", user_dto.getToken());
-//                        if(response.equals("success") == true){
-//                            JOptionPane.showMessageDialog(null, "Thêm thành công");
-//                            dispose();
-//                            LoadDataTableCostTypeInGroup(id);
-//                        }
-//                    }
-//
-//                }
-//
-//            }
         });
     }
     public static HashMap<String, String> hashMapCostTypeInGroup(){
@@ -213,5 +243,19 @@ public class GuiAddProductToGoodsDeliveryNotes extends JFrame {
         listCostType.setFont(new Font("Arial",Font.ITALIC,14));
 
 
+    }
+    public void setTextAreaDescription(){
+        textAreaDescription.setText("");
+        int i = 1;
+        String text = "";
+        for (SelectedDTO selectedDTO : nameArrayList){
+            text +="("+i+") : "+ selectedDTO.getName()+" | quantity = "+selectedDTO.getQuantity()+" | uni Price = "+selectedDTO.getUniPrice()+"\n";
+            i++;
+        }
+        textAreaDescription.setText(text);
+    }
+    public static void disConnectJFrame(){
+        myFrame.setVisible(false);
+        myFrame.dispose();
     }
 }

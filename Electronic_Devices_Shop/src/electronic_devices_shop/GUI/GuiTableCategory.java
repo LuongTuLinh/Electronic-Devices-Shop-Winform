@@ -41,7 +41,7 @@ import org.json.JSONObject;
  *
  * @author DELL
  */
-public class Gui_Table_Category extends JPanel{
+public class GuiTableCategory extends JPanel{
     CategoryDTO categoryDTO;
     private JTabbedPane tabbedPane;
     /*************************DECLARE OF TABBED PANEL*********************************/
@@ -75,7 +75,7 @@ public class Gui_Table_Category extends JPanel{
     /*--------------END DECLARE PANEL CATEGORY TOUR-----------------------*/
     /************************END DECLARE OF TABBED PANEL******************************/
 
-    public Gui_Table_Category(){
+    public GuiTableCategory(){
         init();
     }
     public void init(){
@@ -410,7 +410,7 @@ public class Gui_Table_Category extends JPanel{
 
                 modelTableCategoryTour.addRow(data);
             } catch (JSONException ex) {
-                Logger.getLogger(Gui_Table_Category.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(GuiTableCategory.class.getName()).log(Level.SEVERE, null, ex);
             }
 
         }

@@ -8,6 +8,7 @@ public class ProductDTO {
     private static String sku;
     private static String price;
     private static String category;
+    private static String quantity;
 
     public ProductDTO() {
     }
@@ -67,5 +68,13 @@ public class ProductDTO {
 
     public static void setCategory(String category) {
         ProductDTO.category = category;
+    }
+
+    public static String getQuantity() {
+        return quantity;
+    }
+
+    public static void setQuantity(String quantity) {
+        ProductDTO.quantity = quantity;
     }
 }

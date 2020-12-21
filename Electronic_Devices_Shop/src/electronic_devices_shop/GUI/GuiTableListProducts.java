@@ -35,7 +35,7 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author DELL
  */
-public class Gui_Table_List_Products extends JPanel{
+public class GuiTableListProducts extends JPanel{
     /*************DECLARE JPANEL********************/
     private JPanel panelHeader;
     private JPanel panelContent;
@@ -72,7 +72,7 @@ public class Gui_Table_List_Products extends JPanel{
     public static DefaultTableModel modelTableTour;
     private JScrollPane scrollPane;
     /*************DECLARE ELEMENT JPANEL CONTENT********************/
-    public Gui_Table_List_Products(){
+    public GuiTableListProducts(){
         init();
     }
     public void init(){
@@ -293,7 +293,7 @@ public class Gui_Table_List_Products extends JPanel{
                     String tourId = (tableTour.getModel().getValueAt(row, 0).toString());
                     UserDTO user = new UserDTO();
                     HandleApiProduct.GetProductId("products/"+tourId, user.getToken());
-                    Gui_Edit_Product edit_product = new Gui_Edit_Product();
+                    GuiEditProduct edit_product = new GuiEditProduct();
                 }
             }
         });
@@ -309,7 +309,10 @@ public class Gui_Table_List_Products extends JPanel{
                 }
                 else
                 {
-                    Gui_Detail_Product detail_product = new Gui_Detail_Product();
+                    String tourId = (tableTour.getModel().getValueAt(row, 0).toString());
+                    UserDTO user = new UserDTO();
+                    HandleApiProduct.GetProductId("products/"+tourId, user.getToken());
+                    GuiDetailProduct detail_product = new GuiDetailProduct();
                 }
             }
         });
@@ -317,7 +320,7 @@ public class Gui_Table_List_Products extends JPanel{
         btnAddTour.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                Gui_Add_New_Product add_new_product = new Gui_Add_New_Product();
+                GuiAddNewProduct add_new_product = new GuiAddNewProduct();
             }
         });
 
@@ -381,7 +384,7 @@ public class Gui_Table_List_Products extends JPanel{
 
                 modelTableTour.addRow(data);
             } catch (JSONException | ParseException ex) {
-                Logger.getLogger(Gui_Table_List_Products.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(GuiTableListProducts.class.getName()).log(Level.SEVERE, null, ex);
             }
 
         }

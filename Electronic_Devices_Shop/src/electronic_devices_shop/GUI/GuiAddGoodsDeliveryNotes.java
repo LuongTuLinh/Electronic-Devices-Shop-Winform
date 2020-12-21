@@ -1,25 +1,19 @@
 package electronic_devices_shop.GUI;
 
 
-import electronic_devices_shop.DTO.CategoryDTO;
+import electronic_devices_shop.DTO.SelectedDTO;
 import electronic_devices_shop.DTO.UserDTO;
 import electronic_devices_shop.Handle_API.HandleApiCategory;
-import electronic_devices_shop.Handle_API.HandleApiProduct;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import electronic_devices_shop.Handle_API.HandleApiGoodsDeliveryNote;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.regex.Pattern;
 
-import static electronic_devices_shop.GUI.Gui_Table_List_Products.LoadDataTable;
+import static electronic_devices_shop.GUI.GuiAddProductToGoodsDeliveryNotes.disConnectJFrame;
+import static electronic_devices_shop.GUI.GuiAddProductToGoodsDeliveryNotes.idArrayList;
+import static electronic_devices_shop.GUI.GuiTableGoodsDeliveryNotes.LoadDataTableGDN;
 
 
 public class GuiAddGoodsDeliveryNotes extends JFrame {
@@ -36,10 +30,6 @@ public class GuiAddGoodsDeliveryNotes extends JFrame {
     private JTextField txtNameTour;
     private JSeparator sptNameTour;
 
-
-
-
-
     private JLabel labelSpecification;
     private JTextArea textAreaDescription;
     private JScrollPane scrollPaneDescription;
@@ -54,7 +44,8 @@ public class GuiAddGoodsDeliveryNotes extends JFrame {
     }
     public void GUI(){
         setSize(450, 345);
-        setLocationRelativeTo(null);
+        //setLocationRelativeTo(null);
+        setLocation(270, 160);
         setLayout(null);
         getContentPane().setBackground(Color.BLACK);
         setTitle("Add Goods Delivery Notes");
@@ -161,8 +152,38 @@ public class GuiAddGoodsDeliveryNotes extends JFrame {
         buttonSaveNewTour.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                GuiAddProductToGoodsDeliveryNotes addProductToGoodsDeliveryNotes = new GuiAddProductToGoodsDeliveryNotes();
-                dispose();
+                String name = txtNameTour.getText();
+                String description = textAreaDescription.getText();
+                if(!empty(name)&&!empty(description)){
+                    if(idArrayList == null){
+                        JOptionPane.showMessageDialog(null,"Vui lòng thêm sản phẩm vào phiếu");
+                    }else {
+                        UserDTO user = new UserDTO();
+
+                        String parameter = "{\"supplierName\":\""+name+"\",\"description\":\""+description+"\"}";
+                        String response = (String) HandleApiGoodsDeliveryNote.AddNewGoodsReceivingNotes(parameter, "goodsReceivingNotes", user.getToken());
+                        if(response.equals("success")==true){
+                            String product ="";
+                            for(SelectedDTO selectedDTO : idArrayList){
+                                product += "{\"productId\":"+selectedDTO.getName()+",\"quantity\":"+selectedDTO.getQuantity()+",\"unitPrice\":"+selectedDTO.getUniPrice()+"},";
+                            }
+                            StringBuilder idR = new StringBuilder(product);
+                            System.out.println("list id roles: "+idR.deleteCharAt(idR.length()-1));
+
+                            String data ="{\"goodsReceivingNoteId\":1,\"products\":["+idR.toString()+"]}";
+                            String returnData = HandleApiGoodsDeliveryNote.sendPostAddNewGoodsReceivingNotes(
+                                    data, "goodsReceivingNotes/"+SelectedDTO.getIdGDN()+"/goodsReceivingDetails", UserDTO.getToken());
+                            if(returnData.equals("success") == true){
+                                JOptionPane.showMessageDialog(null,"Thêm phiếu nhập thành công");
+                                LoadDataTableGDN();
+                                disConnectJFrame();
+                                dispose();
+                            }
+                        }
+                    }
+                }else {
+                    JOptionPane.showMessageDialog(null,"Vui lòng nhập đầy đủ thông tin");
+                }
             }
         });
 
