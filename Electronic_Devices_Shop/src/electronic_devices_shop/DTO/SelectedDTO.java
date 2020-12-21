@@ -23,6 +23,11 @@ public class SelectedDTO {
         this.uniPrice = uniPrice;
     }
 
+    public SelectedDTO(String name, String quantity) {
+        this.name = name;
+        this.quantity = quantity;
+    }
+
     public String getId() {
         return id;
     }

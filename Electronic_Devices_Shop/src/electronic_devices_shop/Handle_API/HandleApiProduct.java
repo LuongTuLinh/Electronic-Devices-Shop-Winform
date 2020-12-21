@@ -42,7 +42,6 @@ public class HandleApiProduct {
             if(Integer.parseInt(data.get("id").toString()) >= 1){
                 JSONObject res = (JSONObject) myObject.get("data");
                 JSONArray quantityLog = (JSONArray) res.get("quantityLogs");
-                System.out.println("con cac: "+quantityLog);
                 return quantityLog;
             }else {
                 return null;

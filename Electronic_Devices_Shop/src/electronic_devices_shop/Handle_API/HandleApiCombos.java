@@ -1,8 +1,8 @@
 package electronic_devices_shop.Handle_API;
 
 import electronic_devices_shop.API.ApiRequester;
+import electronic_devices_shop.DTO.ComboDTO;
 import electronic_devices_shop.DTO.GoodsReceivingNote;
-import electronic_devices_shop.DTO.ProductDTO;
 import electronic_devices_shop.DTO.SelectedDTO;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -13,7 +13,7 @@ import javax.swing.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class HandleApiGoodsDeliveryNote {
+public class HandleApiCombos {
     public static JSONArray GetAllGoodsDeliveryNotes(String endpoint, String token){
         JSONParser parser = new JSONParser();
         JSONObject myObject;
@@ -62,49 +62,52 @@ public class HandleApiGoodsDeliveryNote {
         try {
             myObject = (JSONObject) parser.parse(ApiRequester.sendPOST(parameter, endpoint, token));
 
-            if(myObject.get("ApiErr") == null) {
+            if(myObject.get("DiscountPercentage") == null) {
                 //JSONObject data = (JSONObject) myObject.get("data");
                 return "success";
             } else {
-                JOptionPane.showMessageDialog(null,"Lỗi: "+ myObject.get("ApiErr").toString());
-                return null;
+                JOptionPane.showMessageDialog(null,"Lỗi: "+ myObject.get("DiscountPercentage").toString());
+                return "error";
             }
         } catch (ParseException e) {
             e.printStackTrace();
         }
         return null;
     }
-    public static String sendDeleteProduct(String parameter, String endpoint, String token) {
+    public static void GetComboId(String endpoint, String token){
         JSONParser parser = new JSONParser();
         JSONObject myObject;
         try {
-            myObject = (JSONObject) parser.parse(ApiRequester.sendDelete(parameter,endpoint, token));
+            myObject = (JSONObject) parser.parse(ApiRequester.fetchAPI(endpoint, token));
+            JSONObject data = (JSONObject) myObject.get("data");
+            ComboDTO comboDTO = new ComboDTO();
+            ComboDTO.setId(data.get("id").toString());
+            ComboDTO.setName(data.get("name").toString());
+            ComboDTO.setDiscountPercentage(data.get("discountPercent").toString());
+            ComboDTO.setPrice(data.get("price").toString());
+            ComboDTO.setPriceSale(data.get("priceForSale").toString());
 
-            if(myObject.get("ApiErr") == null) {
-                JOptionPane.showMessageDialog(null, "Xoá thành công");
-                return "success";
-            } else {
-                String apierror = myObject.get("ApiErr") == null ? "" : myObject.get("ApiErr").toString();
-
-                String error = "Lỗi:"+ apierror+"\n";
-
-                String[] arrayError = error.split("\\.");
-                String messError = "";
-                for(String s : arrayError){
-                    messError+= s +"\n";
-                }
-
-                JOptionPane.showMessageDialog(null,messError, "My Message", JOptionPane.ERROR_MESSAGE);
-                return "error";
-            }
         } catch (ParseException ex) {
             Logger.getLogger(HandleApiProduct.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return null;
-
     }
+    public static String sendPUTEditCategory(String parameter, String endpoint, String token){
+        JSONParser parser = new JSONParser();
+        JSONObject myObject;
+        try {
+            myObject = (JSONObject) parser.parse(ApiRequester.sendPUT(parameter, endpoint, token));
 
-    //---------------///
+            if(myObject.get("DiscountPercentage") == null) {
+                return "success";
+            } else {
+                JOptionPane.showMessageDialog(null,"Lỗi: "+ myObject.get("DiscountPercentage").toString());
+                return "error";
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
     public static JSONArray GetQuantityLog(String endpoint, String token){
         JSONParser parser = new JSONParser();
         JSONObject myObject;
@@ -114,7 +117,8 @@ public class HandleApiGoodsDeliveryNote {
             JSONObject data = (JSONObject) myObject.get("data");
             if(Integer.parseInt(data.get("id").toString()) >= 1){
                 JSONObject res = (JSONObject) myObject.get("data");
-                JSONArray quantityLog = (JSONArray) res.get("goodsReceivingDetails");
+                JSONArray quantityLog = (JSONArray) res.get("comboDetails");
+
                 return quantityLog;
             }else {
                 return null;
@@ -124,21 +128,5 @@ public class HandleApiGoodsDeliveryNote {
         }
         return null;
 
-    }
-
-    public static void GetGRNId(String endpoint, String token){
-        JSONParser parser = new JSONParser();
-        JSONObject myObject;
-        try {
-            myObject = (JSONObject) parser.parse(ApiRequester.fetchAPI(endpoint, token));
-            JSONObject data = (JSONObject) myObject.get("data");
-            GoodsReceivingNote goodsReceivingNote = new GoodsReceivingNote();
-            GoodsReceivingNote.setId(data.get("id").toString());
-            GoodsReceivingNote.setSupplierName(data.get("supplierName").toString());
-            GoodsReceivingNote.setDescription(data.get("description").toString());
-            GoodsReceivingNote.setTotalPrice(data.get("totalPrice").toString());
-        } catch (ParseException ex) {
-            Logger.getLogger(HandleApiProduct.class.getName()).log(Level.SEVERE, null, ex);
-        }
     }
 }

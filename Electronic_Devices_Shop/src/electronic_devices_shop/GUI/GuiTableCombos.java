@@ -5,21 +5,17 @@
  */
 package electronic_devices_shop.GUI;
 
-import electronic_devices_shop.DTO.CategoryDTO;
 import electronic_devices_shop.DTO.UserDTO;
-import electronic_devices_shop.Handle_API.HandleApiCategory;
+import electronic_devices_shop.Handle_API.HandleApiCombos;
+import electronic_devices_shop.Handle_API.HandleApiGoodsDeliveryNote;
 import electronic_devices_shop.Handle_API.HandleApiProduct;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Font;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Vector;
@@ -35,36 +31,30 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author DELL
  */
-public class GuiTableListProducts extends JPanel{
+public class GuiTableCombos extends JPanel{
     /*************DECLARE JPANEL********************/
     private JPanel panelHeader;
     private JPanel panelContent;
     private JPanel panelButtonHandleTour;
-    private JPanel panelSearchPrice;
 
     /*************END DECLARE JPANEL********************/
 
     /*************DECLARE ELEMENT JPANEL HEADER********************/
     private JLabel labelSearch;
     private JTextField txtSearch;
-    private static JComboBox<CategoryDTO> comboBoxCategoryTour;
+    private JComboBox<String> comboBoxStatusTour;
     private DefaultListCellRenderer listRenderer;
     private JButton buttonSearchTour;
 
     /*************END DECLARE ELEMENT JPANEL HEADER********************/
-
-    /*************DECLARE ELEMENT JPANEL SEARCH PRICE********************/
-    private JLabel labelPriceToPrice;
-    private JTextField txtSearchPriceLow;
-    private JTextField txtSearchPriceExpensive;
-
-    /*************END DECLARE ELEMENT JPANEL SEARCH PRICE********************/
 
     /*************DECLARE ELEMENT JPANEL PANEL BUTTON HANDLE TOUR********************/
     private JButton btnEditTour;
     private JButton btnDeleteTour;
     private JButton btnAddTour;
     private JButton btnSaveTour;
+
+    private JButton btnUpdateCombo;
     /*************END DECLARE ELEMENT JPANEL PANEL BUTTON HANDLE TOUR********************/
 
     /*************DECLARE ELEMENT JPANEL CONTENT********************/
@@ -72,7 +62,7 @@ public class GuiTableListProducts extends JPanel{
     public static DefaultTableModel modelTableTour;
     private JScrollPane scrollPane;
     /*************DECLARE ELEMENT JPANEL CONTENT********************/
-    public GuiTableListProducts(){
+    public GuiTableCombos(){
         init();
     }
     public void init(){
@@ -92,7 +82,7 @@ public class GuiTableListProducts extends JPanel{
         labelSearch.setBounds(130,19,80,25);
 
         txtSearch = new JTextField();
-        txtSearch.setBounds(195,19,280,25);
+        txtSearch.setBounds(195,19,320,25);
 
 //                lbIconSearch = new JLabel();
 //                lbIconSearch.setBounds(360,18,25,25);
@@ -100,12 +90,6 @@ public class GuiTableListProducts extends JPanel{
 
         listRenderer = new DefaultListCellRenderer();
         listRenderer.setHorizontalAlignment(DefaultListCellRenderer.CENTER); // center-aligned items
-
-        comboBoxCategoryTour = new JComboBox<>();
-        loadCategoryTourComboBox();
-        comboBoxCategoryTour.setBounds(570,16,145,30);
-        comboBoxCategoryTour.setFont(new Font("Segoe",Font.BOLD,13));
-        comboBoxCategoryTour.setRenderer(listRenderer);
 
         buttonSearchTour = new JButton("Tìm kiếm");
         buttonSearchTour.setBackground(new Color(32, 171, 214));
@@ -118,86 +102,60 @@ public class GuiTableListProducts extends JPanel{
         panelHeader.add(labelSearch);
         panelHeader.add(txtSearch);
         //panelHeader.add(lbIconSearch);
-        panelHeader.add(comboBoxCategoryTour);
+//        panelHeader.add(comboBoxStatusTour);
         panelHeader.add(buttonSearchTour);
         /***************END ADD ELEMENT FOR PANEL HEADER**********************/
 
         /*------------------------END PANEL HEADER INCLUDE BUTTON AND SEARCH-----------------------------*/
 
-        panelSearchPrice = new JPanel();
-        panelSearchPrice.setLayout(null);
-        panelSearchPrice.setBounds(5, 90, 340, 70);
-        panelSearchPrice.setBackground(Color.white);
-        Border borderOfPanelSearchPrice = BorderFactory.createTitledBorder("Tìm kiếm theo giá");
-        panelSearchPrice.setBorder(borderOfPanelSearchPrice);
-        txtSearchPriceLow = new JTextField();
-        txtSearchPriceLow.setBounds(25,25,120,25);
-        txtSearchPriceLow.addKeyListener(new KeyAdapter() {
-            public void keyReleased(KeyEvent e) {
-                String price = txtSearchPriceLow.getText();
-                long priceTour = Long.parseLong(price.replace(",",""));
-                String priceNewTour = java.text.NumberFormat.getIntegerInstance().format(priceTour);
-                txtSearchPriceLow.setText(priceNewTour);
-            }
-        });
-
-        labelPriceToPrice = new JLabel("đến");
-        labelPriceToPrice.setBounds(155,25,80,25);
-
-        txtSearchPriceExpensive = new JTextField();
-        txtSearchPriceExpensive.setBounds(190,25,120,25);
-        txtSearchPriceExpensive.addKeyListener(new KeyAdapter() {
-            public void keyReleased(KeyEvent e) {
-                String price = txtSearchPriceExpensive.getText();
-                long priceTour = Long.parseLong(price.replace(",",""));
-                String priceNewTour = java.text.NumberFormat.getIntegerInstance().format(priceTour);
-                txtSearchPriceExpensive.setText(priceNewTour);
-            }
-        });
-
-        panelSearchPrice.add(txtSearchPriceLow);
-        panelSearchPrice.add(labelPriceToPrice);
-        panelSearchPrice.add(txtSearchPriceExpensive);
-
         /*------------------------PANEL BUTTON HANDLE TOUR(ADD, EDIT, DELETE, SAVE)-----------------------------*/
         panelButtonHandleTour = new JPanel();
         panelButtonHandleTour.setLayout(null);
-        panelButtonHandleTour.setBounds(390, 90, 590, 70);
+        panelButtonHandleTour.setBounds(0, 520, 990, 70);
         panelButtonHandleTour.setBackground(Color.white);
-        Border borderPanelButton = BorderFactory.createTitledBorder("Xử lý sản phẩm");
-        panelButtonHandleTour.setBorder(borderPanelButton);
+//        Border borderPanelButton = BorderFactory.createTitledBorder("Xử lý sản phẩm");
+//        panelButtonHandleTour.setBorder(borderPanelButton);
 
 
-        btnEditTour = new JButton("Edit Product");
-        btnEditTour.setBackground(new Color(255, 255, 255));
-        btnEditTour.setFont(new Font("Segoe",Font.BOLD,13));
-        btnEditTour.setForeground(Color.BLACK);
-        btnEditTour.setBounds(155,20,115,30);
-        btnEditTour.setCursor(new Cursor(Cursor.HAND_CURSOR));
-
-        btnDeleteTour = new JButton("Delete Product");
-        btnDeleteTour.setBackground(new Color(255, 255, 255));
-        btnDeleteTour.setFont(new Font("Segoe",Font.BOLD,13));
-        btnDeleteTour.setForeground(Color.BLACK);
-        btnDeleteTour.setBounds(290,20,130,30);
-        btnDeleteTour.setCursor(new Cursor(Cursor.HAND_CURSOR));
-
-        btnAddTour = new JButton("Add Product");
+        btnAddTour = new JButton("Add Combo ");
         btnAddTour.setBackground(new Color(255, 255, 255));
         btnAddTour.setFont(new Font("Segoe",Font.BOLD,13));
         btnAddTour.setForeground(Color.BLACK);
-        btnAddTour.setBounds(20,20,115,30);
+        btnAddTour.setBounds(50,20,120,30);
         btnAddTour.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
-        btnSaveTour = new JButton("Detail Product");
+        btnEditTour = new JButton("Edit Combo");
+        btnEditTour.setBackground(new Color(255, 255, 255));
+        btnEditTour.setFont(new Font("Segoe",Font.BOLD,13));
+        btnEditTour.setForeground(Color.BLACK);
+        btnEditTour.setBounds(230,20,120,30);
+        btnEditTour.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+        btnUpdateCombo = new JButton("Update Combo");
+        btnUpdateCombo.setBackground(new Color(255, 255, 255));
+        btnUpdateCombo.setFont(new Font("Segoe",Font.BOLD,13));
+        btnUpdateCombo.setForeground(Color.BLACK);
+        btnUpdateCombo.setBounds(400,20,140,30);
+        btnUpdateCombo.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+        btnDeleteTour = new JButton("Delete Combo ");
+        btnDeleteTour.setBackground(new Color(255, 255, 255));
+        btnDeleteTour.setFont(new Font("Segoe",Font.BOLD,13));
+        btnDeleteTour.setForeground(Color.BLACK);
+        btnDeleteTour.setBounds(600,20,140,30);
+        btnDeleteTour.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+
+        btnSaveTour = new JButton("Detail Combo ");
         btnSaveTour.setBackground(new Color(255, 255, 255));
         btnSaveTour.setFont(new Font("Segoe",Font.BOLD,13));
         btnSaveTour.setForeground(Color.BLACK);
-        btnSaveTour.setBounds(440,20,125,30);
+        btnSaveTour.setBounds(800,20,140,30);
         btnSaveTour.setCursor(new Cursor(Cursor.HAND_CURSOR));
         /****************ADD ELEMENT FOR PANEL BUTTON HANDLE TOUR***********************/
         panelButtonHandleTour.add(btnEditTour);
         panelButtonHandleTour.add(btnDeleteTour);
+        panelButtonHandleTour.add(btnUpdateCombo);
         panelButtonHandleTour.add(btnAddTour);
         panelButtonHandleTour.add(btnSaveTour);
         /****************END ADD ELEMENT FOR PANEL BUTTON HANDLE TOUR***********************/
@@ -207,18 +165,17 @@ public class GuiTableListProducts extends JPanel{
         panelContent = new JPanel();
         panelContent.setLayout(null);
         panelContent.setBackground(Color.white);
-        panelContent.setBounds(0, 175, 990, 420);
+        panelContent.setBounds(0, 120, 990, 420);
 
         Vector<String> columnNames = new Vector<>();
-        columnNames.add("Product Id");
-        columnNames.add("Product Name");
-        columnNames.add("Product Category");
-        columnNames.add("Product Unit");
-        columnNames.add("Product Quantity");
-        columnNames.add("Product Price");
+        columnNames.add("Id");
+        columnNames.add("Name Combo");
+        columnNames.add("Discount Percent");
+        columnNames.add("Price");
+        columnNames.add("Price For Sale");
         modelTableTour = new DefaultTableModel(columnNames, 0);
         tableTour = new JTable(modelTableTour);
-        LoadDataTable();
+        LoadDataTableCombos();
 
 
 
@@ -238,16 +195,11 @@ public class GuiTableListProducts extends JPanel{
         rightRendererPrice.setHorizontalAlignment(JLabel.CENTER);
 
         /****************SET SIZE COLUMN OF TABLE***********************/
-        tableTour.getColumnModel().getColumn(0).setPreferredWidth(80);
-//        tableTour.getColumnModel().getColumn(0).setCellRenderer(rightRenderer);
-//
-        tableTour.getColumnModel().getColumn(1).setPreferredWidth(280);
-//
+//        tableTour.getColumnModel().getColumn(0).setPreferredWidth(100);
+//        tableTour.getColumnModel().getColumn(1).setPreferredWidth(550);
 //        tableTour.getColumnModel().getColumn(2).setPreferredWidth(130);
-//
 //        tableTour.getColumnModel().getColumn(3).setPreferredWidth(80);
 //        tableTour.getColumnModel().getColumn(3).setCellRenderer(rightRenderer);
-//
 //        tableTour.getColumnModel().getColumn(4).setPreferredWidth(95);
 //        tableTour.getColumnModel().getColumn(4).setCellRenderer(rightRendererPrice);
         /****************SET SIZE COLUMN OF TABLE***********************/
@@ -270,7 +222,6 @@ public class GuiTableListProducts extends JPanel{
 
         /*******************ADD ELEMENT FOR PANEL MAIN***********************/
         add(panelHeader);
-        add(panelSearchPrice);
         add(panelContent);
         add(panelButtonHandleTour);
 
@@ -286,14 +237,14 @@ public class GuiTableListProducts extends JPanel{
 
                 if(row == -1)
                 {
-                    JOptionPane.showMessageDialog(null, "Vui lòng chọn sản phẩm cần sửa");
+                    JOptionPane.showMessageDialog(null, "Vui lòng chọn cần sửa");
                 }
                 else
                 {
                     String tourId = (tableTour.getModel().getValueAt(row, 0).toString());
                     UserDTO user = new UserDTO();
-                    HandleApiProduct.GetProductId("products/"+tourId, user.getToken());
-                    GuiEditProduct edit_product = new GuiEditProduct();
+                    HandleApiCombos.GetComboId("combos/"+tourId, user.getToken());
+                    GuiEditCombo detail_product = new GuiEditCombo();
                 }
             }
         });
@@ -311,8 +262,8 @@ public class GuiTableListProducts extends JPanel{
                 {
                     String tourId = (tableTour.getModel().getValueAt(row, 0).toString());
                     UserDTO user = new UserDTO();
-                    HandleApiProduct.GetProductId("products/"+tourId, user.getToken());
-                    GuiDetailProduct detail_product = new GuiDetailProduct();
+                    HandleApiCombos.GetComboId("combos/"+tourId, user.getToken());
+                    GuiDetailCombo guiDetailCombo = new GuiDetailCombo();
                 }
             }
         });
@@ -320,7 +271,8 @@ public class GuiTableListProducts extends JPanel{
         btnAddTour.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                GuiAddNewProduct add_new_product = new GuiAddNewProduct();
+                GuiAddProductsToCombo addProductToGoodsDeliveryNotes = new GuiAddProductsToCombo();
+                GuiAddNewCombo addGoodsDeliveryNotes = new GuiAddNewCombo();
             }
         });
 
@@ -331,7 +283,7 @@ public class GuiTableListProducts extends JPanel{
 
                 if(row == -1)
                 {
-                    JOptionPane.showMessageDialog(null, "Vui lòng chọn cần xoá");
+                    JOptionPane.showMessageDialog(null, "Vui lòng chọn xoá");
                 }
                 else
                 {
@@ -342,9 +294,9 @@ public class GuiTableListProducts extends JPanel{
                         String tourId = (tableTour.getModel().getValueAt(row, 0).toString());
 
                         UserDTO user = new UserDTO();
-                        String response = HandleApiProduct.sendDeleteProduct("","products/"+tourId,user.getToken());
+                        String response = HandleApiProduct.sendDeleteProduct("","combos/"+tourId,user.getToken());
                         if(response.equals("success")){
-                            LoadDataTable();
+                            LoadDataTableCombos();
                         }
                     }else if (result == JOptionPane.NO_OPTION){
 
@@ -358,9 +310,9 @@ public class GuiTableListProducts extends JPanel{
         /*------------------------END HANDLE EVENT ONCLICK MOUSE BUTTON-----------------------------*/
     }
 
-    public static void LoadDataTable(){
+    public static void LoadDataTableCombos(){
         UserDTO user = new UserDTO();
-        JSONArray json = new JSONArray(HandleApiProduct.GetAllProducts("products?Page=1", user.getToken()));
+        JSONArray json = new JSONArray(HandleApiGoodsDeliveryNote.GetAllGoodsDeliveryNotes("combos?Page=1", user.getToken()));
         modelTableTour.setRowCount(0);
         for (int i = 0; i < json.length(); i++) {
 
@@ -372,39 +324,33 @@ public class GuiTableListProducts extends JPanel{
                 data.add(jsonObj.get("id").toString());
                 data.add(jsonObj.get("name").toString());
 
-                JSONParser parser = new JSONParser();
-                org.json.simple.JSONObject myObject;
-                myObject = (org.json.simple.JSONObject) parser.parse(jsonObj.get("category").toString());
-                data.add(myObject.get("name").toString());
-                data.add(jsonObj.get("unit").toString());
-                data.add(jsonObj.get("quantity").toString());
-                long price = Long.parseLong(jsonObj.get("price").toString());
-                String priceTour = java.text.NumberFormat.getIntegerInstance().format(price);
+//                JSONParser parser = new JSONParser();
+//                org.json.simple.JSONObject myObject;
+//                myObject = (org.json.simple.JSONObject) parser.parse(jsonObj.get("category").toString());
+//                data.add(myObject.get("name").toString());
+//                data.add(jsonObj.get("description").toString());
+
+                long discountPercent = Long.parseLong(jsonObj.get("discountPercent").toString());
+                String priceTour = java.text.NumberFormat.getIntegerInstance().format(discountPercent);
                 data.add(priceTour);
 
+                long price = Long.parseLong(jsonObj.get("price").toString());
+                String priceCombo = java.text.NumberFormat.getIntegerInstance().format(price);
+                data.add(priceCombo);
+
+                long priceForSale = Long.parseLong(jsonObj.get("priceForSale").toString());
+                String priSale = java.text.NumberFormat.getIntegerInstance().format(priceForSale);
+                data.add(priSale);
+
+
+
                 modelTableTour.addRow(data);
-            } catch (JSONException | ParseException ex) {
+            } catch (JSONException ex) {
                 Logger.getLogger(GuiTableListProducts.class.getName()).log(Level.SEVERE, null, ex);
             }
 
         }
         tableTour.setModel(modelTableTour);
-    }
-    public static void loadCategoryTourComboBox(){
-        UserDTO user = new UserDTO();
-        JSONArray array = new JSONArray(HandleApiCategory.GetAllCategory("categories?Page=1", user.getToken()));
-        comboBoxCategoryTour.addItem(new CategoryDTO("0", "--Thể Loại --"));
-        for(int i = 0; i < array.length(); i++){
-            try {
-                JSONObject jsonObject = (JSONObject) array.get(i);
-                String id = jsonObject.get("id").toString();
-                String name = jsonObject.get("name").toString();
-                comboBoxCategoryTour.addItem(new CategoryDTO(id, name));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-
     }
 
 }

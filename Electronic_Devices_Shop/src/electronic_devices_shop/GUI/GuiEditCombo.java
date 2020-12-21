@@ -1,21 +1,29 @@
 package electronic_devices_shop.GUI;
 
 
+import electronic_devices_shop.DTO.CategoryDTO;
+import electronic_devices_shop.DTO.ComboDTO;
 import electronic_devices_shop.DTO.SelectedDTO;
 import electronic_devices_shop.DTO.UserDTO;
 import electronic_devices_shop.Handle_API.HandleApiCategory;
+import electronic_devices_shop.Handle_API.HandleApiCombos;
 import electronic_devices_shop.Handle_API.HandleApiGoodsDeliveryNote;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.regex.Pattern;
 
 import static electronic_devices_shop.GUI.GuiAddProductToGoodsDeliveryNotes.*;
+import static electronic_devices_shop.GUI.GuiAddProductsToCombo.*;
+import static electronic_devices_shop.GUI.GuiTableCombos.LoadDataTableCombos;
 import static electronic_devices_shop.GUI.GuiTableGoodsDeliveryNotes.LoadDataTableGDN;
 
 
-public class GuiAddGoodsDeliveryNotes extends JFrame {
+public class GuiEditCombo extends JFrame {
 
     private JPanel panelAddNewTour;
 
@@ -29,25 +37,24 @@ public class GuiAddGoodsDeliveryNotes extends JFrame {
     private JTextField txtNameTour;
     private JSeparator sptNameTour;
 
-    private JLabel labelSpecification;
-    private JTextArea textAreaDescription;
-    private JScrollPane scrollPaneDescription;
+    private JLabel labeldiscountPercentage;
+    private JTextField txtdiscountPercentage;
+    private JSeparator sptdiscountPercentage;
 
-//    private static JComboBox<Tour_Category_DTO> comboBoxCategoryTour;
 
     private JButton buttonSaveNewTour;
     private JButton buttonClearField;
 
-    public GuiAddGoodsDeliveryNotes(){
+    public GuiEditCombo(){
         GUI();
     }
     public void GUI(){
         setSize(450, 345);
-        //setLocationRelativeTo(null);
-        setLocation(270, 160);
+        setLocationRelativeTo(null);
+        //setLocation(270, 160);
         setLayout(null);
         getContentPane().setBackground(Color.BLACK);
-        setTitle("Add Goods Delivery Notes");
+        setTitle("Edit Combo");
         /************************************ PANEL ADD NEW TOUR **************************************/
         panelAddNewTour = new JPanel();
         panelAddNewTour.setLayout(null);
@@ -70,53 +77,56 @@ public class GuiAddGoodsDeliveryNotes extends JFrame {
         sptUnderRightInHeader.setBounds(350,27,80,10);
         sptUnderRightInHeader.setBackground(new Color(23, 23, 23));
 
-        lbTitle = new JLabel("Add Goods Delivery Notes");
-        lbTitle.setBounds(110,18,220,25);
+        lbTitle = new JLabel("Edit Combo");
+        lbTitle.setBounds(160,18,180,25);
         lbTitle.setForeground(new Color(80, 80, 80));
-        lbTitle.setFont(new Font("Times New Roman",1,18));
+        lbTitle.setFont(new Font("Times New Roman",1,19));
 
         /*========================= TEXTFIELD NAME TOUR ========================*/
-        labelNameTour = new JLabel(" Supplier Name :",JLabel.CENTER);
+        labelNameTour = new JLabel(" Combo Name :",JLabel.CENTER);
         labelNameTour.setFont(new Font("Segoe",Font.BOLD,12));
-        labelNameTour.setBounds(5,50,100,30);
+        labelNameTour.setBounds(5,70,100,30);
+
 
         txtNameTour = new JTextField();
-        txtNameTour.setBounds(120,48,270,30);
+        txtNameTour.setBounds(110,68,270,30);
         txtNameTour.setBorder(null);
         txtNameTour.setFont(new Font(Font.SERIF, Font.PLAIN, 15));
+        txtNameTour.setText(ComboDTO.getName());
 
         sptNameTour = new JSeparator();
-        sptNameTour.setBounds(115,78,300,10);
+        sptNameTour.setBounds(110,98,300,10);
         sptNameTour.setBackground(new Color(0,0,0));
         /*=========================END TEXTFIELD NAME TOUR ================*/
 
+        labeldiscountPercentage = new JLabel("Discount Percentage :",JLabel.CENTER);
+        labeldiscountPercentage.setFont(new Font("Segoe",Font.BOLD,12));
+        labeldiscountPercentage.setBounds(30,130,150,30);
+
+        txtdiscountPercentage = new JTextField();
+        txtdiscountPercentage.setBounds(170,128,180,30);
+        txtdiscountPercentage.setFont(new Font(Font.SERIF, Font.PLAIN, 15));
+        txtdiscountPercentage.setText(ComboDTO.getDiscountPercentage());
+
+
+        sptdiscountPercentage = new JSeparator();
+        sptdiscountPercentage.setBounds(170,158,180,10);
+        sptdiscountPercentage.setBackground(new Color(0,0,0));
+
         /*========================= TEXTFIELD PRICE TOUR ===================*/
 
-        labelSpecification = new JLabel("Description :",JLabel.CENTER);
-        labelSpecification.setFont(new Font("Segoe",Font.BOLD,12));
-        labelSpecification.setBounds(5,100,120,30);
-
-        textAreaDescription = new JTextArea(10, 10);
-        textAreaDescription.setLineWrap(true);
-        textAreaDescription.setWrapStyleWord(true);
-        textAreaDescription.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        textAreaDescription.setFont(new Font("Arial, Helvetica, sans-serif", Font.PLAIN, 14));
-
-        scrollPaneDescription = new JScrollPane(textAreaDescription);
-        scrollPaneDescription.setBounds(45,135,360,100);
-
-        buttonSaveNewTour = new JButton(" Add New ");
+        buttonSaveNewTour = new JButton(" Save ");
         buttonSaveNewTour.setBackground(new Color(255, 255, 255));
         buttonSaveNewTour.setFont(new Font("Segoe",Font.BOLD,13));
         buttonSaveNewTour.setForeground(Color.BLACK);
-        buttonSaveNewTour.setBounds(65,250,100,30);
+        buttonSaveNewTour.setBounds(65,220,100,30);
         buttonSaveNewTour.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
         buttonClearField = new JButton(" Refresh ");
         buttonClearField.setBackground(new Color(255, 255, 255));
         buttonClearField.setFont(new Font("Segoe",Font.BOLD,13));
         buttonClearField.setForeground(Color.BLACK);
-        buttonClearField.setBounds(270,250,100,30);
+        buttonClearField.setBounds(270,220,100,30);
         buttonClearField.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
         /*****************ADD ELEMENT FOR PANEL ADD NEW TOUR*****************************/
@@ -130,8 +140,12 @@ public class GuiAddGoodsDeliveryNotes extends JFrame {
         panelAddNewTour.add(txtNameTour);
         panelAddNewTour.add(sptNameTour);
 
-        panelAddNewTour.add(labelSpecification);
-        panelAddNewTour.add(scrollPaneDescription);
+        panelAddNewTour.add(labeldiscountPercentage);
+        panelAddNewTour.add(txtdiscountPercentage);
+        panelAddNewTour.add(sptdiscountPercentage);
+
+//        panelAddNewTour.add(labelSpecification);
+//        panelAddNewTour.add(scrollPaneDescription);
 
         panelAddNewTour.add(buttonClearField);
         panelAddNewTour.add(buttonSaveNewTour);
@@ -139,6 +153,15 @@ public class GuiAddGoodsDeliveryNotes extends JFrame {
         /*********************************END PANEL ADD NEW TOUR*****************************************/
         add(panelAddNewTour);
         setVisible(true);
+
+        txtdiscountPercentage.addKeyListener(new KeyAdapter() {
+            public void keyReleased(KeyEvent e) {
+                String price = txtdiscountPercentage.getText();
+                long priceTour = Long.parseLong(price.replace(",",""));
+                String priceNewTour = java.text.NumberFormat.getIntegerInstance().format(priceTour);
+                txtdiscountPercentage.setText(priceNewTour);
+            }
+        });
 
         /********************************* HANDLE BUTTON ADD NEW TOUR *****************************************/
         buttonClearField.addMouseListener(new MouseAdapter() {
@@ -152,35 +175,26 @@ public class GuiAddGoodsDeliveryNotes extends JFrame {
             @Override
             public void mouseClicked(MouseEvent e) {
                 String name = txtNameTour.getText();
-                String description = textAreaDescription.getText();
+                String description = txtdiscountPercentage.getText().replace(",","");
                 if(!empty(name)&&!empty(description)){
-                    System.out.println(idArrayList);
-                    if(idArrayList.isEmpty()){
-                        JOptionPane.showMessageDialog(null,"Vui lòng thêm sản phẩm vào phiếu");
-                    }else {
-                        UserDTO user = new UserDTO();
+                    String price_PATTERN = "^[1-9]([0-9])*$";
+                    if(Pattern.matches(price_PATTERN, description) == false) {
+                        JOptionPane.showMessageDialog(null, "Lỗi! Vui lòng kiểm tra lại Discount Percentage.");
+                    } else {
+                        if(checkDifferent(name, description)==false){
+                            UserDTO user = new UserDTO();
+                            String parameter = "{\"id\":"+ComboDTO.getId()+",\"name\":\""+name+"\",\"discountPercentage\":"+description+"}";
 
-                        String parameter = "{\"supplierName\":\""+name+"\",\"description\":\""+description+"\"}";
-                        String response = (String) HandleApiGoodsDeliveryNote.AddNewGoodsReceivingNotes(parameter, "goodsReceivingNotes", user.getToken());
-                        if(response.equals("success")==true){
-                            String product ="";
-                            for(SelectedDTO selectedDTO : idArrayList){
-                                product += "{\"productId\":"+selectedDTO.getName()+",\"quantity\":"+selectedDTO.getQuantity()+",\"unitPrice\":"+selectedDTO.getUniPrice()+"},";
-                            }
-                            StringBuilder idR = new StringBuilder(product);
-                            System.out.println("list id roles: "+idR.deleteCharAt(idR.length()-1));
-
-                            String data ="{\"goodsReceivingNoteId\":1,\"products\":["+idR.toString()+"]}";
-                            String returnData = HandleApiGoodsDeliveryNote.sendPostAddNewGoodsReceivingNotes(
-                                    data, "goodsReceivingNotes/"+SelectedDTO.getIdGDN()+"/goodsReceivingDetails", UserDTO.getToken());
-                            if(returnData.equals("success") == true){
-                                idArrayList.clear();
-                                nameArrayList.clear();
-                                JOptionPane.showMessageDialog(null,"Thêm phiếu nhập thành công");
-                                LoadDataTableGDN();
-                                disConnectJFrame();
+                            //APIRequester.sendPUT(parameter, "tourCategories/"+category_dto.getCategoryId(), user.getToken());
+                            String response = HandleApiCombos.sendPUTEditCategory(parameter, "combos/"+ComboDTO.getId(), user.getToken());
+                            if(response.equals("success")){
+                                JOptionPane.showMessageDialog(null, "Sửa thành công");
+                                LoadDataTableCombos();
                                 dispose();
                             }
+
+                        }else {
+                            JOptionPane.showMessageDialog(null, "Combo không có thay đổi");
                         }
                     }
                 }else {
@@ -193,10 +207,16 @@ public class GuiAddGoodsDeliveryNotes extends JFrame {
     }
     public void clearTextField(){
         txtNameTour.setText("");
-        textAreaDescription.setText("");
+        txtdiscountPercentage.setText("");
     }
     public static boolean empty( final String s ) {
         // Null-safe, short-circuit evaluation.
         return s == null || s.trim().isEmpty();
+    }
+    public static boolean checkDifferent(String name, String discountPercentage){
+        if(name.equals(ComboDTO.getName())== true && discountPercentage.equals(ComboDTO.getDiscountPercentage())){
+            return true;
+        }
+        return false;
     }
 }

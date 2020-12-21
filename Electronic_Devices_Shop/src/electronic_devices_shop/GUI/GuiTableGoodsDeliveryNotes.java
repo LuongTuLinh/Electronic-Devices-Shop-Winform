@@ -48,7 +48,6 @@ public class GuiTableGoodsDeliveryNotes extends JPanel{
     /*************END DECLARE ELEMENT JPANEL HEADER********************/
 
     /*************DECLARE ELEMENT JPANEL PANEL BUTTON HANDLE TOUR********************/
-    private JButton btnEditTour;
     private JButton btnDeleteTour;
     private JButton btnAddTour;
     private JButton btnSaveTour;
@@ -121,18 +120,12 @@ public class GuiTableGoodsDeliveryNotes extends JPanel{
         btnAddTour.setBounds(100,20,170,30);
         btnAddTour.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
-        btnEditTour = new JButton("Edit Goods Delivery ");
-        btnEditTour.setBackground(new Color(255, 255, 255));
-        btnEditTour.setFont(new Font("Segoe",Font.BOLD,13));
-        btnEditTour.setForeground(Color.BLACK);
-        btnEditTour.setBounds(300,20,170,30);
-        btnEditTour.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
         btnDeleteTour = new JButton("Delete Goods Delivery ");
         btnDeleteTour.setBackground(new Color(255, 255, 255));
         btnDeleteTour.setFont(new Font("Segoe",Font.BOLD,13));
         btnDeleteTour.setForeground(Color.BLACK);
-        btnDeleteTour.setBounds(500,20,180,30);
+        btnDeleteTour.setBounds(415,20,180,30);
         btnDeleteTour.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
 
@@ -143,7 +136,6 @@ public class GuiTableGoodsDeliveryNotes extends JPanel{
         btnSaveTour.setBounds(720,20,175,30);
         btnSaveTour.setCursor(new Cursor(Cursor.HAND_CURSOR));
         /****************ADD ELEMENT FOR PANEL BUTTON HANDLE TOUR***********************/
-        panelButtonHandleTour.add(btnEditTour);
         panelButtonHandleTour.add(btnDeleteTour);
         panelButtonHandleTour.add(btnAddTour);
         panelButtonHandleTour.add(btnSaveTour);
@@ -218,22 +210,6 @@ public class GuiTableGoodsDeliveryNotes extends JPanel{
         /*------------------------HANDLE EVENT ONCLICK MOUSE BUTTON-----------------------------*/
 
 
-        btnEditTour.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e){
-                int row = tableTour.getSelectedRow();
-
-                if(row == -1)
-                {
-                    JOptionPane.showMessageDialog(null, "Vui lòng chọn cần sua");
-                }
-                else
-                {
-                    JOptionPane.showMessageDialog(null, "Nay Phieu Nhap Ai cho sua ma bam");
-                }
-            }
-        });
-
         btnSaveTour.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -268,7 +244,7 @@ public class GuiTableGoodsDeliveryNotes extends JPanel{
 
                 if(row == -1)
                 {
-                    JOptionPane.showMessageDialog(null, "Vui lòng chọn Tour xoá");
+                    JOptionPane.showMessageDialog(null, "Vui lòng chọn xoá");
                 }
                 else
                 {

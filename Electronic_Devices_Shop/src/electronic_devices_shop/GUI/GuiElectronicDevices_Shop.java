@@ -227,17 +227,17 @@ public class GuiElectronicDevices_Shop {
         btnCategoryManagement.setBorder(null);
         btnCategoryManagement.setFocusPainted(false);
         btnCategoryManagement.setCursor(new Cursor(Cursor.HAND_CURSOR));
-//
-//        btnCostTypeManagement = new JButton("");
-//        //btnCostTypeManagement.setBackground(new Color(12, 109, 102));
-//        btnCostTypeManagement.setBounds(5,290,190,30);
-//        btnCostTypeManagement.setForeground(new Color(255,255,255));
-//        //btnCostTypeManagement.setIcon(new ImageIcon(getClass().getResource("/image/icons8_coin_in_hand_20px.png")));
-//        btnCostTypeManagement.setFont(new Font("Times New Roman",1,14));
-//        btnCostTypeManagement.setHorizontalAlignment(SwingConstants.CENTER);
-//        btnCostTypeManagement.setBorder(null);
-//        btnCostTypeManagement.setFocusPainted(false);
-//        btnCostTypeManagement.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+        btnCostTypeManagement = new JButton("Combo Management");
+        btnCostTypeManagement.setBackground(new Color(46, 46, 46));
+        btnCostTypeManagement.setBounds(5,290,190,30);
+        btnCostTypeManagement.setForeground(new Color(255,255,255));
+        //btnCostTypeManagement.setIcon(new ImageIcon(getClass().getResource("/image/icons8_coin_in_hand_20px.png")));
+        btnCostTypeManagement.setFont(new Font("Times New Roman",1,14));
+        btnCostTypeManagement.setHorizontalAlignment(SwingConstants.CENTER);
+        btnCostTypeManagement.setBorder(null);
+        btnCostTypeManagement.setFocusPainted(false);
+        btnCostTypeManagement.setCursor(new Cursor(Cursor.HAND_CURSOR));
 //
 //        btnRoleManagement = new JButton("");
 //        //btnRoleManagement.setBackground(new Color(12, 109, 102));
@@ -333,7 +333,7 @@ public class GuiElectronicDevices_Shop {
         panelMenu.add(btnTourManagement);
         panelMenu.add(btnAttractionManagement);
         panelMenu.add(btnCategoryManagement);
-//        panelMenu.add(btnCostTypeManagement);
+        panelMenu.add(btnCostTypeManagement);
 //        panelMenu.add(btnRoleManagement);
 //        panelMenu.add(btnThongKe);
 
@@ -420,6 +420,23 @@ public class GuiElectronicDevices_Shop {
             public void mouseClicked(MouseEvent e){
                 panelProcessFunction.removeAll();
                 panelProcessFunction.add(new GuiTableGoodsDeliveryNotes());
+                jframe.repaint();
+            }
+        });
+
+        btnCostTypeManagement.addMouseListener(new MouseAdapter(){
+            @Override
+            public void mouseEntered(MouseEvent e){
+                btnCostTypeManagement.setBackground(new Color(87, 87, 87));
+            }
+            @Override
+            public void mouseExited(MouseEvent e){
+                btnCostTypeManagement.setBackground(new Color(46, 46, 46));
+            }
+            @Override
+            public void mouseClicked(MouseEvent e){
+                panelProcessFunction.removeAll();
+                panelProcessFunction.add(new GuiTableCombos());
                 jframe.repaint();
             }
         });
