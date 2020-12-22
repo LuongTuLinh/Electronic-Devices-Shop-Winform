@@ -22,9 +22,13 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.plaf.basic.BasicScrollBarUI;
@@ -85,10 +89,10 @@ public class GuiTableListProducts extends JPanel{
         panelHeader.setLayout(null);
         panelHeader.setBounds(5, 10, 980, 70);
         panelHeader.setBackground(Color.white);
-        Border blackline = BorderFactory.createTitledBorder("Tìm kiếm");
+        Border blackline = BorderFactory.createTitledBorder("Search");
         panelHeader.setBorder(blackline);
 
-        labelSearch = new JLabel("Tìm kiếm:");
+        labelSearch = new JLabel("Search:");
         labelSearch.setBounds(130,19,80,25);
 
         txtSearch = new JTextField();
@@ -107,7 +111,7 @@ public class GuiTableListProducts extends JPanel{
         comboBoxCategoryTour.setFont(new Font("Segoe",Font.BOLD,13));
         comboBoxCategoryTour.setRenderer(listRenderer);
 
-        buttonSearchTour = new JButton("Tìm kiếm");
+        buttonSearchTour = new JButton("Search");
         buttonSearchTour.setBackground(new Color(32, 171, 214));
         buttonSearchTour.setFont(new Font("Segoe",Font.BOLD,13));
         buttonSearchTour.setForeground(Color.WHITE);
@@ -128,7 +132,7 @@ public class GuiTableListProducts extends JPanel{
         panelSearchPrice.setLayout(null);
         panelSearchPrice.setBounds(5, 90, 340, 70);
         panelSearchPrice.setBackground(Color.white);
-        Border borderOfPanelSearchPrice = BorderFactory.createTitledBorder("Tìm kiếm theo giá");
+        Border borderOfPanelSearchPrice = BorderFactory.createTitledBorder("search by price");
         panelSearchPrice.setBorder(borderOfPanelSearchPrice);
         txtSearchPriceLow = new JTextField();
         txtSearchPriceLow.setBounds(25,25,120,25);
@@ -141,7 +145,7 @@ public class GuiTableListProducts extends JPanel{
             }
         });
 
-        labelPriceToPrice = new JLabel("đến");
+        labelPriceToPrice = new JLabel("to");
         labelPriceToPrice.setBounds(155,25,80,25);
 
         txtSearchPriceExpensive = new JTextField();
@@ -164,7 +168,7 @@ public class GuiTableListProducts extends JPanel{
         panelButtonHandleTour.setLayout(null);
         panelButtonHandleTour.setBounds(390, 90, 590, 70);
         panelButtonHandleTour.setBackground(Color.white);
-        Border borderPanelButton = BorderFactory.createTitledBorder("Xử lý sản phẩm");
+        Border borderPanelButton = BorderFactory.createTitledBorder("Handle Product");
         panelButtonHandleTour.setBorder(borderPanelButton);
 
 
@@ -279,6 +283,323 @@ public class GuiTableListProducts extends JPanel{
         /*------------------------HANDLE EVENT ONCLICK MOUSE BUTTON-----------------------------*/
 
 
+        buttonSearchTour.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                String nameTour = txtSearch.getText();
+                CategoryDTO category_dto = (CategoryDTO) (comboBoxCategoryTour.getSelectedItem());
+                String categoryId = category_dto.getCategoryId();
+                if(categoryId.equals("0")){
+                    categoryId = "";
+                }
+                String priceLow = txtSearchPriceLow.getText().replace(",","");;
+                String priceExpensive = txtSearchPriceExpensive.getText().replace(",","");;
+
+                String price_PATTERN = "^[0-9]+$";
+
+                if(!empty(nameTour)){
+                    nameTour = encodeValue(nameTour);
+                }else {
+                    nameTour="";
+                }
+
+
+                if(nameTour.equals("") == false){
+                    if(categoryId.equals("") == true && priceLow.equals("") == true&&
+                            priceExpensive.equals("")==true){
+                        //1 minh name
+                        String parameter = "&Filters[Name]=\""+nameTour+"\"&FilterConditions[Name]=like";
+                        loadDataTableAfterSearch(parameter);
+                    }
+                    if(categoryId.equals("") == false||priceLow.equals("")==false||priceExpensive.equals("")==false) {
+                        if(categoryId.equals("") == false){
+                            if(priceLow.equals("")==true&&priceExpensive.equals("")==true){
+                                // name va category
+                                String parameter = "&Filters[Name]=\""+nameTour+"\"&FilterConditions[Name]=like&Filters[CategoryId]=\""+categoryId+"\"&FilterConditions[CategoryId]==";
+                                loadDataTableAfterSearch(parameter);
+                            }
+                            if(priceLow.equals("")==false&&priceExpensive.equals("")==true){
+                                if(Pattern.matches(price_PATTERN, priceLow) == true){
+                                    // name va category va price low
+                                    String parameter = "&Filters[Name]=\""+nameTour+"\"&FilterConditions[Name]=like&Filters[CategoryId]=\""+categoryId+"\"&FilterConditions[CategoryId]==&Filters[Price]="+priceLow+"&FilterConditions[Price]=>=";
+                                    loadDataTableAfterSearch(parameter);
+                                }else {
+                                    JOptionPane.showMessageDialog(null,"Vui lòng kiểm tra lại giá");
+                                }
+
+                            }
+                            if(priceLow.equals("")==true&&priceExpensive.equals("")==false){
+                                if(Pattern.matches(price_PATTERN, priceExpensive) == true){
+                                    // name va category va price expensive
+                                    String parameter = "&Filters[Name]=\""+nameTour+"\"&FilterConditions[Name]=like&Filters[CategoryId]=\""+categoryId+"\"&FilterConditions[CategoryId]==&Filters[Price]="+priceExpensive+"&FilterConditions[Price]=<=";
+                                    loadDataTableAfterSearch(parameter);
+                                }else {
+                                    JOptionPane.showMessageDialog(null,"Vui lòng kiểm tra lại giá");
+                                }
+
+                            }
+                            if(priceLow.equals("")==false&&priceExpensive.equals("")==false){
+                                if(Pattern.matches(price_PATTERN, priceExpensive) == true||Pattern.matches(price_PATTERN, priceLow) == true){
+                                    // name va category va price expensive price low
+                                    String parameter = "&Filters[Name]=\""+nameTour+"\"&FilterConditions[Name]=like&Filters[CategoryId]=\""+categoryId+"\"&FilterConditions[CategoryId]==&Filters[Price]="+priceLow+","+priceExpensive+"&FilterConditions[Price]=between";
+                                    loadDataTableAfterSearch(parameter);
+                                }else {
+                                    JOptionPane.showMessageDialog(null,"Vui lòng kiểm tra lại giá");
+                                }
+
+                            }
+
+
+                        }
+                        if(categoryId.equals("") == true){
+                            if(priceLow.equals("")==true&&priceExpensive.equals("")==true){
+                                // name va status
+                                String parameter ="&Filters[Name]=\""+nameTour+"\"&FilterConditions[Name]=like";
+                                loadDataTableAfterSearch(parameter);
+                            }
+                            if(priceLow.equals("")==false&&priceExpensive.equals("")==true){
+                                if(Pattern.matches(price_PATTERN, priceLow) == true){
+                                    // name va status va price low
+                                    String parameter = "&Filters[Name]=\""+nameTour+"\"&FilterConditions[Name]=like&Filters[Price]="+priceLow+"&FilterConditions[Price]=>=";
+                                    loadDataTableAfterSearch(parameter);
+                                }else {
+                                    JOptionPane.showMessageDialog(null,"Vui lòng kiểm tra lại giá");
+                                }
+
+                            }
+                            if(priceLow.equals("")==true&&priceExpensive.equals("")==false){
+                                if(Pattern.matches(price_PATTERN, priceExpensive) == true){
+                                    // name va status va price expensive
+                                    String parameter = "&Filters[Name]=\""+nameTour+"\"&FilterConditions[Name]=like&Filters[Price]="+priceExpensive+"&FilterConditions[Price]=<=";
+                                    loadDataTableAfterSearch(parameter);
+                                }else {
+                                    JOptionPane.showMessageDialog(null,"Vui lòng kiểm tra lại giá");
+                                }
+
+                            }
+                            if(priceLow.equals("")==false&&priceExpensive.equals("")==false){
+                                if(Pattern.matches(price_PATTERN, priceExpensive) == true||Pattern.matches(price_PATTERN, priceLow) == true){
+                                    // name va status va price expensive price low
+                                    String parameter = "&Filters[Name]=\""+nameTour+"\"&FilterConditions[Name]=like&Filters[Price]="+priceLow+","+priceExpensive+"&FilterConditions[Price]=between";
+                                    loadDataTableAfterSearch(parameter);
+                                }else {
+                                    JOptionPane.showMessageDialog(null,"Vui lòng kiểm tra lại giá");
+                                }
+
+                            }
+
+                        }
+                        if(categoryId.equals("") == false){
+                            if(priceLow.equals("")==false&&priceExpensive.equals("")==false){
+                                // name status category price l  price e
+                                if(Pattern.matches(price_PATTERN, priceExpensive) == true|| Pattern.matches(price_PATTERN, priceLow) == true){
+                                    String parameter = "&Filters[Name]=\""+nameTour+"\"&FilterConditions[Name]=like&Filters[CategoryId]=\""+categoryId+"\"&FilterConditions[CategoryId]==&Filters[Price]="+priceLow+","+priceExpensive+"&FilterConditions[Price]=between";
+                                    loadDataTableAfterSearch(parameter);
+                                }else {
+                                    JOptionPane.showMessageDialog(null,"Vui lòng kiểm tra lại giá");
+                                }
+                            }
+                            if(priceLow.equals("")==true&&priceExpensive.equals("")==false){
+                                // name status category  price e
+                                if(Pattern.matches(price_PATTERN, priceExpensive) == true){
+                                    String parameter = "&Filters[Name]=\""+nameTour+"\"&FilterConditions[Name]=like&Filters[CategoryId]=\""+categoryId+"\"&FilterConditions[CategoryId]==&Filters[Price]="+priceExpensive+"&FilterConditions[Price]=<=";
+                                    loadDataTableAfterSearch(parameter);
+                                }else {
+                                    JOptionPane.showMessageDialog(null,"Vui lòng kiểm tra lại giá");
+                                }
+                            }
+                            if(priceLow.equals("")==false&&priceExpensive.equals("")==true){
+                                // name status category price l
+                                if(Pattern.matches(price_PATTERN, priceLow) == true){
+                                    String parameter = "&Filters[Name]=\""+nameTour+"\"&FilterConditions[Name]=like&Filters[CategoryId]=\""+categoryId+"\"&FilterConditions[CategoryId]==&Filters[Price]="+priceLow+"&FilterConditions[Price]=>=";
+                                    loadDataTableAfterSearch(parameter);
+                                }else {
+                                    JOptionPane.showMessageDialog(null,"Vui lòng kiểm tra lại giá");
+                                }
+                            }
+                        }
+                        if(categoryId.equals("") == true){
+                            if(priceLow.equals("")==false&&priceExpensive.equals("")==false){
+                                //name va price low price expensive
+                                if(Pattern.matches(price_PATTERN, priceExpensive) == true|| Pattern.matches(price_PATTERN, priceLow) == true){
+                                    String parameter = "&Filters[Name]=\""+nameTour+"\"&FilterConditions[Name]=like&Filters[Price]="+priceLow+","+priceExpensive+"&FilterConditions[Price]=between";
+                                    loadDataTableAfterSearch(parameter);
+                                }else {
+                                    JOptionPane.showMessageDialog(null,"Vui lòng kiểm tra lại giá");
+                                }
+                            }
+                            if(priceLow.equals("")==false&&priceExpensive.equals("")==true){
+                                //name va price low
+                                if(Pattern.matches(price_PATTERN, priceLow) == true){
+                                    String parameter = "&Filters[Name]=\""+nameTour+"\"&FilterConditions[Name]=like&Filters[Price]="+priceLow+"&FilterConditions[Price]=>=";
+                                    loadDataTableAfterSearch(parameter);
+                                }else {
+                                    JOptionPane.showMessageDialog(null,"Vui lòng kiểm tra lại giá");
+                                }
+                            }
+                            if(priceLow.equals("")==true&&priceExpensive.equals("")==false){
+                                //name va price low
+                                if(Pattern.matches(price_PATTERN, priceExpensive) == true){
+                                    String parameter = "&Filters[Name]=\""+nameTour+"\"&FilterConditions[Name]=like&Filters[Price]="+priceExpensive+"&FilterConditions[Price]=<=";
+                                    loadDataTableAfterSearch(parameter);
+                                }else {
+                                    JOptionPane.showMessageDialog(null,"Vui lòng kiểm tra lại giá");
+                                }
+                            }
+                        }
+                    }
+                }
+                if(nameTour.equals("") == true){
+                    if(categoryId.equals("") == true&&priceExpensive.equals("")==true&&priceLow.equals("")==true){
+                        //name
+                        String parameter = "&Filters[Name]=\""+nameTour+"\"&FilterConditions[Name]=like";
+                        loadDataTableAfterSearch(parameter);
+                    }
+                    if(categoryId.equals("") == false||priceExpensive.equals("")==false||priceLow.equals("")==false){
+                        if(categoryId.equals("") == false){
+                            if(priceExpensive.equals("")==true&&priceLow.equals("")==true){
+                                // category
+                                String parameter = "&Filters[CategoryId]=\""+categoryId+"\"&FilterConditions[CategoryId]==";
+                                loadDataTableAfterSearch(parameter);
+                            }
+                            if(priceExpensive.equals("")==false&&priceLow.equals("")==false){
+                                if(Pattern.matches(price_PATTERN, priceExpensive) == true|| Pattern.matches(price_PATTERN, priceLow) == true){
+                                    // category thap cao
+                                    String parameter = "&Filters[CategoryId]=\""+categoryId+"\"&FilterConditions[CategoryId]==&Filters[Price]="+priceLow+","+priceExpensive+"&FilterConditions[Price]=between";
+                                    loadDataTableAfterSearch(parameter);
+                                }else {
+                                    JOptionPane.showMessageDialog(null,"Vui lòng kiểm tra lại giá");
+                                }
+                            }
+                            if(priceExpensive.equals("")==true&&priceLow.equals("")==false){
+                                if(Pattern.matches(price_PATTERN, priceLow) == true){
+                                    // category thap
+                                    String parameter = "&Filters[CategoryId]=\""+categoryId+"\"&FilterConditions[CategoryId]==&Filters[Price]="+priceLow+"&FilterConditions[Price]=>=";
+                                    loadDataTableAfterSearch(parameter);
+                                }else {
+                                    JOptionPane.showMessageDialog(null,"Vui lòng kiểm tra lại giá");
+                                }
+                            }
+                            if(priceExpensive.equals("")==false&&priceLow.equals("")==true){
+                                if(Pattern.matches(price_PATTERN, priceExpensive) == true){
+                                    // category cao
+                                    String parameter = "&Filters[CategoryId]=\""+categoryId+"\"&FilterConditions[CategoryId]==&Filters[Price]="+priceExpensive+"&FilterConditions[Price]=<=";
+                                    loadDataTableAfterSearch(parameter);
+                                }else {
+                                    JOptionPane.showMessageDialog(null,"Vui lòng kiểm tra lại giá");
+                                }
+                            }
+                        }
+                        if(categoryId.equals("") == true){
+
+//                                // status
+//                                String parameter = "&Filters[status]=\""+status+"\"&FilterConditions[status]==";
+//                                loadDataTableAfterSearch(parameter);
+                            if(priceExpensive.equals("")==true&&priceLow.equals("")==true){
+                                // status
+                                String parameter = "";
+                                loadDataTableAfterSearch(parameter);
+                            }
+                            if(priceExpensive.equals("")==false&&priceLow.equals("")==false){
+                                if(Pattern.matches(price_PATTERN, priceExpensive) == true|| Pattern.matches(price_PATTERN, priceLow) == true){
+                                    // status thap cao
+                                    String parameter = "&Filters[Price]="+priceLow+","+priceExpensive+"&FilterConditions[Price]=between";
+                                    loadDataTableAfterSearch(parameter);
+                                }else {
+                                    JOptionPane.showMessageDialog(null,"Vui lòng kiểm tra lại giá");
+                                }
+                            }
+                            if(priceExpensive.equals("")==true&&priceLow.equals("")==false){
+                                if(Pattern.matches(price_PATTERN, priceLow) == true){
+                                    // status thap
+                                    String parameter = "&Filters[Price]="+priceLow+"&FilterConditions[Price]=>=";
+                                    loadDataTableAfterSearch(parameter);
+                                }else {
+                                    JOptionPane.showMessageDialog(null,"Vui lòng kiểm tra lại giá");
+                                }
+                            }
+                            if(priceExpensive.equals("")==false&&priceLow.equals("")==true){
+                                if(Pattern.matches(price_PATTERN, priceExpensive) == true){
+                                    // status cao
+                                    String parameter = "&Filters[Price]="+priceExpensive+"&FilterConditions[Price]=<=";
+                                    loadDataTableAfterSearch(parameter);
+                                }else {
+                                    JOptionPane.showMessageDialog(null,"Vui lòng kiểm tra lại giá");
+                                }
+                            }
+                        }
+                        if(categoryId.equals("") == false){
+                            // status va category
+//                                String parameter = "&Filters[CategoryId]=\""+categoryId+"\"&FilterConditions[CategoryId]==&Filters[status]=\""+status+"\"&FilterConditions[status]==";
+//                                loadDataTableAfterSearch(parameter);
+                            if(priceExpensive.equals("")==true&&priceLow.equals("")==true){
+                                // status va category
+                                String parameter = "&Filters[CategoryId]=\""+categoryId+"\"&FilterConditions[CategoryId]==";
+                                loadDataTableAfterSearch(parameter);
+                            }
+                            if(priceExpensive.equals("")==false&&priceLow.equals("")==false){
+                                if(Pattern.matches(price_PATTERN, priceExpensive) == true|| Pattern.matches(price_PATTERN, priceLow) == true){
+                                    // status va category thap cao
+                                    String parameter = "&Filters[CategoryId]=\""+categoryId+"\"&FilterConditions[CategoryId]==&Filters[Price]="+priceLow+","+priceExpensive+"&FilterConditions[Price]=between";
+                                    loadDataTableAfterSearch(parameter);
+                                }else {
+                                    JOptionPane.showMessageDialog(null,"Vui lòng kiểm tra lại giá");
+                                }
+                            }
+                            if(priceExpensive.equals("")==true&&priceLow.equals("")==false){
+                                if(Pattern.matches(price_PATTERN, priceLow) == true){
+                                    // status category thap
+                                    String parameter = "&Filters[CategoryId]=\""+categoryId+"\"&FilterConditions[CategoryId]==&Filters[Price]="+priceLow+"&FilterConditions[Price]=>=";
+                                    loadDataTableAfterSearch(parameter);
+                                }else {
+                                    JOptionPane.showMessageDialog(null,"Vui lòng kiểm tra lại giá");
+                                }
+                            }
+                            if(priceExpensive.equals("")==false&&priceLow.equals("")==true){
+                                if(Pattern.matches(price_PATTERN, priceExpensive) == true){
+                                    // status category cao
+                                    String parameter = "&Filters[CategoryId]=\""+categoryId+"\"&FilterConditions[CategoryId]==&Filters[Price]="+priceExpensive+"&FilterConditions[Price]=<=";
+                                    loadDataTableAfterSearch(parameter);
+                                }else {
+                                    JOptionPane.showMessageDialog(null,"Vui lòng kiểm tra lại giá");
+                                }
+                            }
+                        }
+                        if(categoryId.equals("")==true){
+                            if(priceLow.equals("")==false&&priceExpensive.equals("")==false){
+                                if(Pattern.matches(price_PATTERN, priceExpensive) == true|| Pattern.matches(price_PATTERN, priceLow) == true){
+                                    // thap cao
+                                    String parameter = "&Filters[Price]="+priceLow+","+priceExpensive+"&FilterConditions[Price]=between";
+                                    loadDataTableAfterSearch(parameter);
+                                }else {
+                                    JOptionPane.showMessageDialog(null,"Vui lòng kiểm tra lại giá");
+                                }
+                            }
+                            if(priceLow.equals("")==false&&priceExpensive.equals("")==true){
+                                if(Pattern.matches(price_PATTERN, priceLow) == true){
+                                    // thap
+                                    String parameter = "&Filters[Price]="+priceLow+"&FilterConditions[Price]=>=";
+                                    loadDataTableAfterSearch(parameter);
+                                }else {
+                                    JOptionPane.showMessageDialog(null,"Vui lòng kiểm tra lại giá");
+                                }
+                            }
+                            if(priceLow.equals("")==true&&priceExpensive.equals("")==false){
+                                if(Pattern.matches(price_PATTERN, priceExpensive) == true){
+                                    //  cao
+                                    String parameter = "&Filters[Price]="+priceExpensive+"&FilterConditions[Price]=<=";
+                                    loadDataTableAfterSearch(parameter);
+                                }else {
+                                    JOptionPane.showMessageDialog(null,"Vui lòng kiểm tra lại giá");
+                                }
+                            }
+                        }
+                    }
+                }
+
+            }
+        });
+
         btnEditTour.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e){
@@ -390,10 +711,51 @@ public class GuiTableListProducts extends JPanel{
         }
         tableTour.setModel(modelTableTour);
     }
+
+    public void loadDataTableAfterSearch(String parameter){
+        System.out.println(parameter);
+        UserDTO user = new UserDTO();
+        JSONArray json = new JSONArray(HandleApiProduct.GetAllProducts("products?Page=1&Limit=100"+parameter, user.getToken()));
+        System.out.println(json);
+        if(json.length() >=1) {
+            modelTableTour.setRowCount(0);
+            for (int i = 0; i < json.length(); i++) {
+
+                JSONObject jsonObj;
+                try {
+                    jsonObj = json.getJSONObject(i);
+                    Vector<String> data = new Vector<>();
+
+                    data.add(jsonObj.get("id").toString());
+                    data.add(jsonObj.get("name").toString());
+
+                    JSONParser parser = new JSONParser();
+                    org.json.simple.JSONObject myObject;
+                    myObject = (org.json.simple.JSONObject) parser.parse(jsonObj.get("category").toString());
+                    data.add(myObject.get("name").toString());
+                    data.add(jsonObj.get("unit").toString());
+                    data.add(jsonObj.get("quantity").toString());
+                    long price = Long.parseLong(jsonObj.get("price").toString());
+                    String priceTour = java.text.NumberFormat.getIntegerInstance().format(price);
+                    data.add(priceTour);
+
+                    modelTableTour.addRow(data);
+                } catch (JSONException | ParseException ex) {
+                    Logger.getLogger(GuiTableListProducts.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
+            }
+            tableTour.setModel(modelTableTour);
+        }else {
+            JOptionPane.showMessageDialog(null, "Không tìm thấy tour cần tìm");
+        }
+
+    }
+
     public static void loadCategoryTourComboBox(){
         UserDTO user = new UserDTO();
         JSONArray array = new JSONArray(HandleApiCategory.GetAllCategory("categories?Page=1", user.getToken()));
-        comboBoxCategoryTour.addItem(new CategoryDTO("0", "--Thể Loại --"));
+        comboBoxCategoryTour.addItem(new CategoryDTO("0", "-- Category --"));
         for(int i = 0; i < array.length(); i++){
             try {
                 JSONObject jsonObject = (JSONObject) array.get(i);
@@ -405,6 +767,17 @@ public class GuiTableListProducts extends JPanel{
             }
         }
 
+    }
+    public static boolean empty( final String s ) {
+        // Null-safe, short-circuit evaluation.
+        return s == null || s.trim().isEmpty();
+    }
+    private static String encodeValue(String value) {
+        try {
+            return URLEncoder.encode(value, StandardCharsets.UTF_8.toString());
+        } catch (UnsupportedEncodingException ex) {
+            throw new RuntimeException(ex.getCause());
+        }
     }
 
 }

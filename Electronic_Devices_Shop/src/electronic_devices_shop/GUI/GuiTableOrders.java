@@ -6,7 +6,9 @@
 package electronic_devices_shop.GUI;
 
 import electronic_devices_shop.DTO.UserDTO;
+import electronic_devices_shop.Handle_API.HandleApiCombos;
 import electronic_devices_shop.Handle_API.HandleApiGoodsDeliveryNote;
+import electronic_devices_shop.Handle_API.HandleApiOrder;
 import electronic_devices_shop.Handle_API.HandleApiProduct;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -30,7 +32,7 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author DELL
  */
-public class GuiTableGoodsDeliveryNotes extends JPanel{
+public class GuiTableOrders extends JPanel{
     /*************DECLARE JPANEL********************/
     private JPanel panelHeader;
     private JPanel panelContent;
@@ -48,9 +50,10 @@ public class GuiTableGoodsDeliveryNotes extends JPanel{
     /*************END DECLARE ELEMENT JPANEL HEADER********************/
 
     /*************DECLARE ELEMENT JPANEL PANEL BUTTON HANDLE TOUR********************/
+    private JButton btnEditTour;
     private JButton btnDeleteTour;
-    private JButton btnAddTour;
     private JButton btnSaveTour;
+
     /*************END DECLARE ELEMENT JPANEL PANEL BUTTON HANDLE TOUR********************/
 
     /*************DECLARE ELEMENT JPANEL CONTENT********************/
@@ -58,7 +61,7 @@ public class GuiTableGoodsDeliveryNotes extends JPanel{
     public static DefaultTableModel modelTableTour;
     private JScrollPane scrollPane;
     /*************DECLARE ELEMENT JPANEL CONTENT********************/
-    public GuiTableGoodsDeliveryNotes(){
+    public GuiTableOrders(){
         init();
     }
     public void init(){
@@ -97,8 +100,6 @@ public class GuiTableGoodsDeliveryNotes extends JPanel{
         /****************ADD ELEMENT FOR PANEL HEADER***********************/
         panelHeader.add(labelSearch);
         panelHeader.add(txtSearch);
-        //panelHeader.add(lbIconSearch);
-//        panelHeader.add(comboBoxStatusTour);
         panelHeader.add(buttonSearchTour);
         /***************END ADD ELEMENT FOR PANEL HEADER**********************/
 
@@ -113,31 +114,30 @@ public class GuiTableGoodsDeliveryNotes extends JPanel{
 //        panelButtonHandleTour.setBorder(borderPanelButton);
 
 
-        btnAddTour = new JButton("Add Goods Delivery ");
-        btnAddTour.setBackground(new Color(255, 255, 255));
-        btnAddTour.setFont(new Font("Segoe",Font.BOLD,13));
-        btnAddTour.setForeground(Color.BLACK);
-        btnAddTour.setBounds(100,20,170,30);
-        btnAddTour.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnEditTour = new JButton("Edit Order");
+        btnEditTour.setBackground(new Color(255, 255, 255));
+        btnEditTour.setFont(new Font("Segoe",Font.BOLD,13));
+        btnEditTour.setForeground(Color.BLACK);
+        btnEditTour.setBounds(140,20,150,30);
+        btnEditTour.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
-
-        btnDeleteTour = new JButton("Delete Goods Delivery ");
+        btnDeleteTour = new JButton("Delete Order ");
         btnDeleteTour.setBackground(new Color(255, 255, 255));
         btnDeleteTour.setFont(new Font("Segoe",Font.BOLD,13));
         btnDeleteTour.setForeground(Color.BLACK);
-        btnDeleteTour.setBounds(415,20,180,30);
+        btnDeleteTour.setBounds(440,20,150,30);
         btnDeleteTour.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
 
-        btnSaveTour = new JButton("Detail Goods Delivery ");
+        btnSaveTour = new JButton("Detail Order ");
         btnSaveTour.setBackground(new Color(255, 255, 255));
         btnSaveTour.setFont(new Font("Segoe",Font.BOLD,13));
         btnSaveTour.setForeground(Color.BLACK);
-        btnSaveTour.setBounds(720,20,175,30);
+        btnSaveTour.setBounds(740,20,150,30);
         btnSaveTour.setCursor(new Cursor(Cursor.HAND_CURSOR));
         /****************ADD ELEMENT FOR PANEL BUTTON HANDLE TOUR***********************/
+        panelButtonHandleTour.add(btnEditTour);
         panelButtonHandleTour.add(btnDeleteTour);
-        panelButtonHandleTour.add(btnAddTour);
         panelButtonHandleTour.add(btnSaveTour);
         /****************END ADD ELEMENT FOR PANEL BUTTON HANDLE TOUR***********************/
         /*------------------------END PANEL BUTTON HANDLE TOUR(ADD, EDIT, DELETE, SAVE)-----------------------------*/
@@ -146,16 +146,17 @@ public class GuiTableGoodsDeliveryNotes extends JPanel{
         panelContent = new JPanel();
         panelContent.setLayout(null);
         panelContent.setBackground(Color.white);
-        panelContent.setBounds(0, 120, 990, 420);
+        panelContent.setBounds(0, 120, 990, 405);
 
         Vector<String> columnNames = new Vector<>();
-        columnNames.add("Id");
-        columnNames.add("Supplier Name");
+        columnNames.add("Id Order");
+        columnNames.add("Status Order");
         columnNames.add("Description");
-        columnNames.add("Total Price");
+        columnNames.add("Delivery Address");
+        columnNames.add("totalPrice");
         modelTableTour = new DefaultTableModel(columnNames, 0);
         tableTour = new JTable(modelTableTour);
-        LoadDataTableGDN();
+        LoadDataTableOrder();
 
 
 
@@ -210,6 +211,42 @@ public class GuiTableGoodsDeliveryNotes extends JPanel{
         /*------------------------HANDLE EVENT ONCLICK MOUSE BUTTON-----------------------------*/
 
 
+        btnEditTour.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e){
+                int row = tableTour.getSelectedRow();
+
+                if(row == -1)
+                {
+                    JOptionPane.showMessageDialog(null, "Vui lòng chọn cần sửa");
+                }
+                else
+                {
+                    String tourId = (tableTour.getModel().getValueAt(row, 0).toString());
+                    String status = (tableTour.getModel().getValueAt(row, 1).toString());
+                    UserDTO user = new UserDTO();
+                    String trangthai ="";
+                    if(status.equals("New")){
+                        trangthai = "1";
+                    }
+                    if(status.equals("Processing")){
+                        trangthai = "2";
+                    }
+                    if(status.equals("Exported")){
+                        trangthai = "3";
+                    }
+                    if(status.equals("Done")){
+                        trangthai = "4";
+                    }
+                    if(status.equals("Cancelled")){
+                        trangthai = "5";
+                    }
+//                    HandleApiCombos.GetComboId("orders/"+tourId, user.getToken());
+                    GuiEditOrder detail_product = new GuiEditOrder(tourId, trangthai);
+                }
+            }
+        });
+
         btnSaveTour.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -223,19 +260,12 @@ public class GuiTableGoodsDeliveryNotes extends JPanel{
                 {
                     String tourId = (tableTour.getModel().getValueAt(row, 0).toString());
                     UserDTO user = new UserDTO();
-                    HandleApiGoodsDeliveryNote.GetGRNId("goodsReceivingNotes/"+tourId, user.getToken());
-                    GuiDetailGoodsReceivingNote detail_product = new GuiDetailGoodsReceivingNote();
+                    HandleApiOrder.GetGRNId("orders/"+tourId, user.getToken());
+                    GuiDetailOrder guiDetailCombo = new GuiDetailOrder();
                 }
             }
         });
 
-        btnAddTour.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                GuiAddProductToGoodsDeliveryNotes addProductToGoodsDeliveryNotes = new GuiAddProductToGoodsDeliveryNotes();
-                GuiAddGoodsDeliveryNotes addGoodsDeliveryNotes = new GuiAddGoodsDeliveryNotes();
-            }
-        });
 
         btnDeleteTour.addMouseListener(new MouseAdapter() {
             @Override
@@ -255,9 +285,9 @@ public class GuiTableGoodsDeliveryNotes extends JPanel{
                         String tourId = (tableTour.getModel().getValueAt(row, 0).toString());
 
                         UserDTO user = new UserDTO();
-                        String response = HandleApiProduct.sendDeleteProduct("","goodsReceivingNotes/"+tourId,user.getToken());
+                        String response = HandleApiProduct.sendDeleteProduct("","orders/"+tourId,user.getToken());
                         if(response.equals("success")){
-                            LoadDataTableGDN();
+                            LoadDataTableOrder();
                         }
                     }else if (result == JOptionPane.NO_OPTION){
 
@@ -271,9 +301,9 @@ public class GuiTableGoodsDeliveryNotes extends JPanel{
         /*------------------------END HANDLE EVENT ONCLICK MOUSE BUTTON-----------------------------*/
     }
 
-    public static void LoadDataTableGDN(){
+    public static void LoadDataTableOrder(){
         UserDTO user = new UserDTO();
-        JSONArray json = new JSONArray(HandleApiGoodsDeliveryNote.GetAllGoodsDeliveryNotes("goodsReceivingNotes?Page=1", user.getToken()));
+        JSONArray json = new JSONArray(HandleApiGoodsDeliveryNote.GetAllGoodsDeliveryNotes("orders?Page=1", user.getToken()));
         modelTableTour.setRowCount(0);
         for (int i = 0; i < json.length(); i++) {
 
@@ -283,17 +313,31 @@ public class GuiTableGoodsDeliveryNotes extends JPanel{
                 Vector<String> data = new Vector<>();
 
                 data.add(jsonObj.get("id").toString());
-                data.add(jsonObj.get("supplierName").toString());
-
-//                JSONParser parser = new JSONParser();
-//                org.json.simple.JSONObject myObject;
-//                myObject = (org.json.simple.JSONObject) parser.parse(jsonObj.get("category").toString());
-//                data.add(myObject.get("name").toString());
+                String trangthai ="";
+                String status = jsonObj.get("status").toString();
+                if(status.equals("1")){
+                    trangthai = "New";
+                }
+                if(status.equals("2")){
+                    trangthai = "Processing";
+                }
+                if(status.equals("3")){
+                    trangthai = "Exported";
+                }
+                if(status.equals("4")){
+                    trangthai = "Done";
+                }
+                if(status.equals("5")){
+                    trangthai = "Cancelled";
+                }
+                data.add(trangthai);
                 data.add(jsonObj.get("description").toString());
+                data.add(jsonObj.get("deliveryAddress").toString());
 
-                long price = Long.parseLong(jsonObj.get("totalPrice").toString());
-                String priceTour = java.text.NumberFormat.getIntegerInstance().format(price);
+                long discountPercent = Long.parseLong(jsonObj.get("totalPrice").toString());
+                String priceTour = java.text.NumberFormat.getIntegerInstance().format(discountPercent);
                 data.add(priceTour);
+
 
                 modelTableTour.addRow(data);
             } catch (JSONException ex) {

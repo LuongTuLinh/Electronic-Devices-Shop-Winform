@@ -206,7 +206,7 @@ public class GuiElectronicDevices_Shop {
         btnTourManagement.setFocusPainted(false);
         btnTourManagement.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
-        btnAttractionManagement = new JButton("Category Management");
+        btnAttractionManagement = new JButton("Categories Management");
         btnAttractionManagement.setBackground(new Color(46, 46, 46));
         btnAttractionManagement.setBounds(5,230,190,30);
         btnAttractionManagement.setForeground(new Color(255,255,255));
@@ -228,7 +228,7 @@ public class GuiElectronicDevices_Shop {
         btnCategoryManagement.setFocusPainted(false);
         btnCategoryManagement.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
-        btnCostTypeManagement = new JButton("Combo Management");
+        btnCostTypeManagement = new JButton("Combos Management");
         btnCostTypeManagement.setBackground(new Color(46, 46, 46));
         btnCostTypeManagement.setBounds(5,290,190,30);
         btnCostTypeManagement.setForeground(new Color(255,255,255));
@@ -238,17 +238,17 @@ public class GuiElectronicDevices_Shop {
         btnCostTypeManagement.setBorder(null);
         btnCostTypeManagement.setFocusPainted(false);
         btnCostTypeManagement.setCursor(new Cursor(Cursor.HAND_CURSOR));
-//
-//        btnRoleManagement = new JButton("");
-//        //btnRoleManagement.setBackground(new Color(12, 109, 102));
-//        btnRoleManagement.setBounds(5,320,190,30);
-//        btnRoleManagement.setForeground(new Color(255,255,255));
-//        //btnRoleManagement.setIcon(new ImageIcon(getClass().getResource("/image/icons8_passenger_with_baggage_20px.png")));
-//        btnRoleManagement.setFont(new Font("Times New Roman",1,14));
-//        btnRoleManagement.setHorizontalAlignment(SwingConstants.CENTER);
-//        btnRoleManagement.setBorder(null);
-//        btnRoleManagement.setFocusPainted(false);
-//        btnRoleManagement.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+        btnRoleManagement = new JButton("Orders Management");
+        btnRoleManagement.setBackground(new Color(46, 46, 46));
+        btnRoleManagement.setBounds(5,320,190,30);
+        btnRoleManagement.setForeground(new Color(255,255,255));
+        //btnRoleManagement.setIcon(new ImageIcon(getClass().getResource("/image/icons8_passenger_with_baggage_20px.png")));
+        btnRoleManagement.setFont(new Font("Times New Roman",1,14));
+        btnRoleManagement.setHorizontalAlignment(SwingConstants.CENTER);
+        btnRoleManagement.setBorder(null);
+        btnRoleManagement.setFocusPainted(false);
+        btnRoleManagement.setCursor(new Cursor(Cursor.HAND_CURSOR));
 //
 //        btnThongKe = new JButton("");
 //        //btnThongKe.setBackground(new Color(12, 109, 102));
@@ -270,7 +270,7 @@ public class GuiElectronicDevices_Shop {
         labelSetting.setBounds(5,460,200,14);
         labelSetting.setForeground(new Color(255,255,255));
 
-        btnUser = new JButton(" Người dùng   ");
+        btnUser = new JButton(" User Admin   ");
         btnUser.setBackground(new Color(51,51,51));
         btnUser.setBounds(5,480,190,30);
         btnUser.setForeground(new Color(255,255,255));
@@ -281,7 +281,7 @@ public class GuiElectronicDevices_Shop {
         btnUser.setFocusPainted(false);
         btnUser.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
-        btnSetUp = new JButton("  Hỗ Trợ         ");
+        btnSetUp = new JButton("  Setting         ");
         btnSetUp.setBackground(new Color(51,51,51));
         btnSetUp.setBounds(5,510,190,30);
         btnSetUp.setForeground(new Color(255,255,255));
@@ -334,7 +334,7 @@ public class GuiElectronicDevices_Shop {
         panelMenu.add(btnAttractionManagement);
         panelMenu.add(btnCategoryManagement);
         panelMenu.add(btnCostTypeManagement);
-//        panelMenu.add(btnRoleManagement);
+        panelMenu.add(btnRoleManagement);
 //        panelMenu.add(btnThongKe);
 
         panelMenu.add(labelSetting);
@@ -437,6 +437,23 @@ public class GuiElectronicDevices_Shop {
             public void mouseClicked(MouseEvent e){
                 panelProcessFunction.removeAll();
                 panelProcessFunction.add(new GuiTableCombos());
+                jframe.repaint();
+            }
+        });
+
+        btnRoleManagement.addMouseListener(new MouseAdapter(){
+            @Override
+            public void mouseEntered(MouseEvent e){
+                btnRoleManagement.setBackground(new Color(87, 87, 87));
+            }
+            @Override
+            public void mouseExited(MouseEvent e){
+                btnRoleManagement.setBackground(new Color(46, 46, 46));
+            }
+            @Override
+            public void mouseClicked(MouseEvent e){
+                panelProcessFunction.removeAll();
+                panelProcessFunction.add(new GuiTableOrders());
                 jframe.repaint();
             }
         });

@@ -36,6 +36,7 @@ public class GuiTableCombos extends JPanel{
     private JPanel panelHeader;
     private JPanel panelContent;
     private JPanel panelButtonHandleTour;
+    private JPanel panelButtonHandleTour1;
 
     /*************END DECLARE JPANEL********************/
 
@@ -55,6 +56,10 @@ public class GuiTableCombos extends JPanel{
     private JButton btnSaveTour;
 
     private JButton btnUpdateCombo;
+    private JButton btnEditTour1;
+    private JButton btnDeleteTour1;
+    private JButton btnAddTour1;
+    private JButton btnCancel;
     /*************END DECLARE ELEMENT JPANEL PANEL BUTTON HANDLE TOUR********************/
 
     /*************DECLARE ELEMENT JPANEL CONTENT********************/
@@ -75,10 +80,10 @@ public class GuiTableCombos extends JPanel{
         panelHeader.setLayout(null);
         panelHeader.setBounds(5, 10, 980, 70);
         panelHeader.setBackground(Color.white);
-        Border blackline = BorderFactory.createTitledBorder("Tìm kiếm");
+        Border blackline = BorderFactory.createTitledBorder("Search");
         panelHeader.setBorder(blackline);
 
-        labelSearch = new JLabel("Tìm kiếm:");
+        labelSearch = new JLabel("Search:");
         labelSearch.setBounds(130,19,80,25);
 
         txtSearch = new JTextField();
@@ -91,7 +96,7 @@ public class GuiTableCombos extends JPanel{
         listRenderer = new DefaultListCellRenderer();
         listRenderer.setHorizontalAlignment(DefaultListCellRenderer.CENTER); // center-aligned items
 
-        buttonSearchTour = new JButton("Tìm kiếm");
+        buttonSearchTour = new JButton("Search");
         buttonSearchTour.setBackground(new Color(32, 171, 214));
         buttonSearchTour.setFont(new Font("Segoe",Font.BOLD,13));
         buttonSearchTour.setForeground(Color.WHITE);
@@ -165,7 +170,7 @@ public class GuiTableCombos extends JPanel{
         panelContent = new JPanel();
         panelContent.setLayout(null);
         panelContent.setBackground(Color.white);
-        panelContent.setBounds(0, 120, 990, 420);
+        panelContent.setBounds(0, 120, 990, 405);
 
         Vector<String> columnNames = new Vector<>();
         columnNames.add("Id");
@@ -220,10 +225,57 @@ public class GuiTableCombos extends JPanel{
         /***************END ADD ELEMENT FOR PANEL CONTENT*************************/
         /*------------------------END PANEL CONTENT INCLUDE TABLE TOURS MANAGEMENT-----------------------------*/
 
+
+        panelButtonHandleTour1 = new JPanel();
+        panelButtonHandleTour1.setLayout(null);
+        panelButtonHandleTour1.setBounds(70, 525, 790, 70);
+        panelButtonHandleTour1.setBackground(Color.white);
+        Border borderPanelButton = BorderFactory.createTitledBorder("Handle Update Combo Is Selecte");
+        panelButtonHandleTour1.setBorder(borderPanelButton);
+
+
+        btnAddTour1 = new JButton("Add Product Combo");
+        btnAddTour1.setBackground(new Color(255, 255, 255));
+        btnAddTour1.setFont(new Font("Segoe",Font.BOLD,13));
+        btnAddTour1.setForeground(Color.BLACK);
+        btnAddTour1.setBounds(20,25,170,30);
+        btnAddTour1.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+        btnEditTour1 = new JButton("Edit Product Combo ");
+        btnEditTour1.setBackground(new Color(255, 255, 255));
+        btnEditTour1.setFont(new Font("Segoe",Font.BOLD,13));
+        btnEditTour1.setForeground(Color.BLACK);
+        btnEditTour1.setBounds(217,25,170,30);
+        btnEditTour1.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+        btnDeleteTour1 = new JButton("Delete Product Combo");
+        btnDeleteTour1.setBackground(new Color(255, 255, 255));
+        btnDeleteTour1.setFont(new Font("Segoe",Font.BOLD,13));
+        btnDeleteTour1.setForeground(Color.BLACK);
+        btnDeleteTour1.setBounds(420,25,180,30);
+        btnDeleteTour1.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+        btnCancel = new JButton("Cancel");
+        btnCancel.setBackground(new Color(255, 255, 255));
+        btnCancel.setFont(new Font("Segoe",Font.BOLD,13));
+        btnCancel.setForeground(Color.BLACK);
+        btnCancel.setBounds(635,25,115,30);
+        btnCancel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+        /****************ADD ELEMENT FOR PANEL BUTTON HANDLE TOUR***********************/
+        panelButtonHandleTour1.add(btnEditTour1);
+        panelButtonHandleTour1.add(btnDeleteTour1);
+        panelButtonHandleTour1.add(btnAddTour1);
+        panelButtonHandleTour1.add(btnCancel);
+        /****************END ADD ELEMENT FOR PANEL BUTTON HANDLE TOUR***********************/
+
+
         /*******************ADD ELEMENT FOR PANEL MAIN***********************/
         add(panelHeader);
         add(panelContent);
         add(panelButtonHandleTour);
+        add(panelButtonHandleTour1);
+        panelButtonHandleTour1.setVisible(false);
 
         /******************END ADD ELEMENT FOR PANEL MAIN************************/
 
@@ -273,6 +325,43 @@ public class GuiTableCombos extends JPanel{
             public void mouseClicked(MouseEvent e) {
                 GuiAddProductsToCombo addProductToGoodsDeliveryNotes = new GuiAddProductsToCombo();
                 GuiAddNewCombo addGoodsDeliveryNotes = new GuiAddNewCombo();
+            }
+        });
+
+        btnAddTour1.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                GuiAddProductsToCombo addProductToGoodsDeliveryNotes = new GuiAddProductsToCombo();
+                GuiAddNewCombo addGoodsDeliveryNotes = new GuiAddNewCombo();
+            }
+        });
+
+        btnUpdateCombo.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int row = tableTour.getSelectedRow();
+
+                if(row == -1)
+                {
+                    JOptionPane.showMessageDialog(null, "Vui lòng chọn cần thay đổi");
+                }
+                else
+                {
+                    String tourId = (tableTour.getModel().getValueAt(row, 0).toString());
+                    UserDTO user = new UserDTO();
+                    HandleApiCombos.GetComboId("combos/"+tourId, user.getToken());
+                    panelButtonHandleTour1.setVisible(true);
+                    panelButtonHandleTour.setVisible(false);
+                }
+
+            }
+        });
+
+        btnCancel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                panelButtonHandleTour1.setVisible(false);
+                panelButtonHandleTour.setVisible(true);
             }
         });
 

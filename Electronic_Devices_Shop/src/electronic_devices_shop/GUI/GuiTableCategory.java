@@ -162,7 +162,7 @@ public class GuiTableCategory extends JPanel{
         panelTableCategory.setBounds(400,0,580,570);
         panelTableCategory.setBackground(Color.white);
 
-        labelSearchCategory = new JLabel("Tìm kiếm:");
+        labelSearchCategory = new JLabel("Search:");
         labelSearchCategory.setBounds(80,21,80,25);
 
         txtSearchCategory = new JTextField();
